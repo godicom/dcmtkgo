@@ -1,0 +1,20 @@
+cmake_minimum_required(VERSION 3.0)
+find_package(SWIG REQUIRED)
+include(${SWIG_USE_FILE})
+
+
+
+find_package(DCMTK REQUIRED)
+include_directories(/usr/local/include/)
+#mark_as_advanced(SWIG_DIR SWIG_EXECUTABLE SWIG_VERSION)
+
+
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
+set(CMAKE_VERBOSE_MAKEFILE ON)
+set(CMAKE_SWIG_FLAGS -intgosize 64)
+
+SET_SOURCE_FILES_PROPERTIES(dcmtkgo.i PROPERTIES CPLUSPLUS ON)
+SET_SOURCE_FILES_PROPERTIES(dcmtkgo.i PROPERTIES SWIG_FLAGS "-includeall")
+
+SWIG_ADD_MODULE(dcmtkgo go dcmtkgo.i)
+#SWIG_LINK_LIBRARIES(dcmtkgo dcmdata)
