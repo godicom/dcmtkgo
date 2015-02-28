@@ -12,18 +12,23 @@ if (APPLE)
 include_directories(/usr/local/include/)
 else(LINUX)
 include_directories(/usr/include/)
-include_directories(/usr/include/linux/)
-include_directories(/usr/include/x86_64-linux-gnu/)
+#include_directories(/usr/include/linux/)
+#include_directories(/usr/lib/gcc/x86_64-linux-gnu/4.7.2)
+#include_directories(/usr/include/c++/4.7/)
+#include_directories(/usr/include/c++/4.7/tr1/)
+#include_directories(/usr/include/c++/4.7/x86_64-linux-gnu)
+#include_directories(/usr/include/x86_64-linux-gnu/)
 endif()
 
 
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 set(CMAKE_VERBOSE_MAKEFILE ON)
-set(CMAKE_SWIG_FLAGS -intgosize 64)
+set(CMAKE_SWIG_FLAGS -intgosize 64 -c++)
 
 SET_SOURCE_FILES_PROPERTIES(dcmtkgo.i PROPERTIES CPLUSPLUS ON)
-SET_SOURCE_FILES_PROPERTIES(dcmtkgo.i PROPERTIES SWIG_FLAGS "-includeall")
+#SET_SOURCE_FILES_PROPERTIES(dcmtkgo.i PROPERTIES SWIG_FLAGS "-includeall")
+
 
 SWIG_ADD_MODULE(dcmtkgo go dcmtkgo.i)
 SWIG_LINK_LIBRARIES(dcmtkgo ${DCMTK_LIBRARIES})

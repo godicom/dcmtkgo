@@ -4,8 +4,8 @@
 
 %{
 //config
-//#include "dcmtk/config/osconfig.h"
-//#include "dcmtk/config/cfunix.h"
+#include "dcmtk/config/osconfig.h"
+#include "dcmtk/config/cfunix.h"
 
 ///ofstd
 #include "dcmtk/ofstd/ofalgo.h"  
@@ -128,9 +128,15 @@
 
 %}
 
+//%include "std_string.i"
+//%include "std_vector.i"
+//%include "std_pair.i"
+//%include "std_map.i"
+//%include "exception.i"
+
 //config
-//%include "dcmtk/config/cfunix.h"
-//%include "dcmtk/config/osconfig.h"
+%include "dcmtk/config/cfunix.h"
+%include "dcmtk/config/osconfig.h"
 
 //ofstd
 //%include "dcmtk/ofstd/ofalgo.h"  
@@ -155,7 +161,7 @@
 //%include "dcmtk/ofstd/ofglobal.h" 
 //%include "dcmtk/ofstd/ofstack.h"  
 //%include "dcmtk/ofstd/oftime.h"
-//%include "dcmtk/ofstd/oflist.h"   
+%include "dcmtk/ofstd/oflist.h"   
 //%include "dcmtk/ofstd/ofcmdln.h"  
 //%include "dcmtk/ofstd/ofdate.h"   
 //%include "dcmtk/ofstd/ofstd.h"    
@@ -163,11 +169,12 @@
 //%include "dcmtk/ofstd/ofconapp.h"  
 //%include "dcmtk/ofstd/ofdatime.h"  
 //%include "dcmtk/ofstd/ofmap.h"    
-//%include "dcmtk/ofstd/ofstdinc.h"  
+%include "dcmtk/ofstd/ofstdinc.h"  
 //%include "dcmtk/ofstd/oftypes.h"
 
 
 //dcmdata
+%include "dcmtk/dcmdata/dcobject.h"	
 %include "dcmtk/dcmdata/dcitem.h"
 %include "dcmtk/dcmdata/cmdlnarg.h"	
 %include "dcmtk/dcmdata/dcistrmb.h"	
@@ -200,7 +207,7 @@
 %include "dcmtk/dcmdata/dcvrcs.h"	
 %include "dcmtk/dcmdata/dcvrtm.h"
 %include "dcmtk/dcmdata/dcdeftag.h"	
-%include "dcmtk/dcmdata/dcobject.h"	
+
 %include "dcmtk/dcmdata/dcrleenc.h"	
 %include "dcmtk/dcmdata/dcvrda.h"	
 %include "dcmtk/dcmdata/dcvrui.h"
