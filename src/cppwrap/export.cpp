@@ -1,11 +1,18 @@
 #include <iostream>
 #include <dcmtk/dcmdata/dcdatset.h>
+#include <dcmtk/dcmdata/dcfilefo.h>
+#include <dcmtk/dcmdata/dcdeftag.h>
+#include <dcmtk/dcmdata/dcerror.h>
+#include <dcmtk/dcmdata/dcelem.h>
+#include <dcmtk/dcmdata/dcxfer.h>
+#include <dcmtk/dcmdata/dctypes.h>
+#include <dcmtk/dcmdata/dcobject.h>
+#include <dcmtk/ofstd/ofcond.h>
 
 extern "C"
 {
 	#include "export.h"
 }
-
 
 void doSomeJob()
 {
@@ -13,10 +20,45 @@ void doSomeJob()
 	std::cout.flush();
 }
 
-
 void printDCMTags(const char * fileName)
 {
-	DcmDataset ds;
-	ds.loadFile(fileName);
-	ds.print(std::cout);
+	std::cout << "filepath" << fileName << "\n";
+	DcmDataset * ds = 0;
+	DcmFileFormat dsFile;
+	OFCondition cond;
+	std::cout << "before open file\n";
+	cond = dsFile.loadFile(fileName, EXS_Unknown, EGL_noChange, DCM_MaxReadLength);
+	if (cond.bad())
+	{
+		std::cout << "fail open\n";
+		std::cout << cond.text();
+	}
+	else
+	{
+		ds = dsFile.getDataset();
+		std::cout << "load done\n";
+		DcmElement* element=0;
+		cond = ds->findAndGetElement(DCM_SOPClassUID,element);
+		if (cond.bad())
+		{
+			std::cout << "fail get element\n";
+			std::cout << cond.text();
+		}
+		else
+		{
+			std::cout << "find and get done\n";
+			OFString str;
+			cond = element->getOFString(str, 0, true);
+			if (cond.bad())
+			{
+				std::cout << "fail get string\n";
+				std::cout << cond.text();
+			}
+			else
+			{
+				std::cout << "DCM_SOPClassUID" << str << "\n";
+			}
+		}
+	}
+	std::cout.flush();
 }
