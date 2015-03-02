@@ -14,10 +14,19 @@ extern "C"
 	#include "export.h"
 }
 
-void doSomeJob()
+int openDcmtkDataSet(const char * fileName, int64_t * rvDataSetCtx)
 {
-	std::cout << "Hello from lib\n" ;
-	std::cout.flush();
+	return 0;
+}
+
+int closeDcmtkDataSet(int dataSetCtx)
+{
+	return 0;
+}
+
+void getErrorDescription(int errorId, char * buf, size_t bufSize)
+{
+
 }
 
 void printDCMTags(const char * fileName)
