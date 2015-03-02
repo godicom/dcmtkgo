@@ -1,11 +1,10 @@
 package main
 
-// #cgo CFLAGS: -I/Users/vladislavtroinich/projects/dcmtkgo/src/cppwrap/
-// #cgo LDFLAGS: -l/Users/vladislavtroinich/projects/cppwrap-build/libdcmtkgo.a
-// #include "export.h"
-
+// #cgo CFLAGS: -I./cppwrap
+// #cgo LDFLAGS: -L./cppwrap -lc++ -ldcmtkgo
+// #include <export.h>
+import "C"
 import (
-	"C"
 	"fmt"
 )
 
