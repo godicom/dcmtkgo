@@ -7,6 +7,8 @@ export.cpp
 export.h
 )
 
+add_definitions(-std=c++11)
+
 find_package(DCMTK)
 
 include_directories(${DCMTK_INCLUDE_DIRS})

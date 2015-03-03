@@ -5,7 +5,7 @@ package main
 //Add for mac(clang): -lc++
 
 // #cgo CFLAGS: -I./cppwrap
-// #cgo LDFLAGS: -L./cppwrap  -ldcmtkgo -ldcmdata -lz -lofstd -loflog
+// #cgo LDFLAGS: -L./cppwrap  -ldcmtkgo -ldcmdata -lz -lofstd -loflog -lc++
 // #include <export.h>
 import "C"
 import (
@@ -14,7 +14,17 @@ import (
 
 func main() {
 	fmt.Printf("Invoking c library...\n")
-	path := "/home/antlad/tmp/test.dcm"
-	C.printDCMTags(C.CString(path))
+	//var errCtx C.ulong = 0
+	var errCtx C.ulong = 0
+	var dsCtx C.ulong = 0
+	C.makeGetErrorCtx(&errCtx)
+	var errId C.int = C.openDcmtkDataSet(errCtx, "empty", &dsCtx)
+	if errId != 0 {
+		var errStr [256]C.char
+		C.getError(errCtx, errId, &errStr[0], 256)
+	}
+
+	//path := "/Users/vladislavtroinich/data/test.dcm"
+	//C.printDCMTags(C.CString(path))
 	fmt.Printf("Done\n")
 }
