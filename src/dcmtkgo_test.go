@@ -1,4 +1,4 @@
-package main
+package dcmkgo_test
 
 //Don't know how to do it yet(may be later with cmake)
 //Add for linux(gcc): -lstdc++
@@ -11,6 +11,7 @@ package main
 import "C"
 import (
 	"fmt"
+	"testing"
 	"unsafe"
 )
 
@@ -21,7 +22,7 @@ func printError(errCtx C.ulong, errId C.int) {
 	fmt.Println(C.GoString(&errStr[0]))
 }
 
-func main() {
+func TestHandlesNonExistingItemsTest(t *testing.T) {
 	fmt.Printf("Invoking c library...\n")
 	//var errCtx C.ulong = 0
 	var errCtx C.ulong = 0

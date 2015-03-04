@@ -99,6 +99,8 @@ enum DcmtgoEVR
 
 void printDCMTags(const char * fileName);
 
+
+
 int makeGetErrorCtx(unsigned long * errorCtx);
 void closeErrorCtx(unsigned long errorCtx);
 int getError(unsigned long errorCtx, int errorId, char * buf, unsigned long bufSize);
