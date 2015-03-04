@@ -10,11 +10,18 @@ package dcmtkgo
 // #include <stdlib.h>
 import "C"
 import (
-	"fmt"
+	//"fmt"
 	//"unsafe"
-//	"runtime"
+	//	"runtime"
 	"errors"
 )
+
+var i int
+
+func dummySummInLib(a int, b int) int {
+	i = int(C.dummySum(C.int(a+i), C.int(b)))
+	return i
+}
 
 // TODO: optimize
 func getErrorString(errCtx C.ulong, errId C.int) string {
@@ -25,12 +32,12 @@ func getErrorString(errCtx C.ulong, errId C.int) string {
 
 type Dataset struct {
 	errCtx C.ulong
-	dsCtx C.ulong
+	dsCtx  C.ulong
 }
 
-func (ds * Dataset) openDataSet(filename string) error {
+func (ds *Dataset) openDataSet(filename string) error {
 	errId := C.makeGetErrorCtx(&ds.errCtx)
-	if  errId!= 0 {
+	if errId != 0 {
 		return errors.New("Can't create Error ctx")
 	}
 	errId = C.openDcmtkDataSet(ds.errCtx, C.CString(filename), &ds.dsCtx)
@@ -40,21 +47,22 @@ func (ds * Dataset) openDataSet(filename string) error {
 	return nil
 }
 
-func (ds * Dataset) getString(g uint16, e uint16) (string, error) {
+func (ds *Dataset) getString(g uint16, e uint16) (string, error) {
 
-	errId := C.testPrintTag(ds.errCtx, ds.dsCtx, C.ushort(g), C.ushort(e))
+	var errStr [256]C.char
+	errId := C.getString(ds.errCtx, ds.dsCtx, C.ushort(g), C.ushort(e), &errStr[0], 256)
 	if errId != 0 {
-		fmt.Println(getErrorString(ds.errCtx, errId))
+		return "", errors.New(getErrorString(ds.errCtx, errId))
 	}
 
-	return "", nil
+	return C.GoString(&errStr[0]), nil
 }
 
-func closeDataSet(ds * Dataset) error {
+func closeDataSet(ds *Dataset) error {
 	if ds.errCtx == 0 {
 		defer C.closeErrorCtx(ds.errCtx)
 	}
-	
+
 	if ds.dsCtx != 0 {
 		var errId C.int = C.closeDcmtkDataSet(ds.errCtx, ds.dsCtx)
 
@@ -67,11 +75,10 @@ func closeDataSet(ds * Dataset) error {
 	return nil
 }
 
-
-func NewDataset() * Dataset {
-	ds := Dataset {
-		errCtx :0,
-		dsCtx: 0}
+func NewDataset() *Dataset {
+	ds := Dataset{
+		errCtx: 0,
+		dsCtx:  0}
 	// runtime.SetFinalizer(&ds, closeDataSet)
 	return &ds
 }

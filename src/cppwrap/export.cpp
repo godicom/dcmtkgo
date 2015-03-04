@@ -46,6 +46,7 @@ private:
 };
 
 
+
 int makeGetErrorCtx(unsigned long * errorCtx)
 {
 	try
@@ -120,10 +121,45 @@ int openDcmtkDataSet(unsigned long errorCtx, const char * fileName, unsigned lon
 	std::cout << "Open ds done" << std::endl;
 	return 0;
 }
+static int i = 0;
+
+int dummySum(int a, int b)
+{
+	return a + b + ++i;
+}
+
+int getString(unsigned long errorCtx, unsigned long dataSetCtx, unsigned short g, unsigned short e, char * buf, int bufSize)
+{
+	ErrorCtx * errCtx = (ErrorCtx *)errorCtx;
+	try
+	{
+		DataSetContext * ctx = (DataSetContext*)dataSetCtx;
+		DcmDataset * ds = ctx->ds;
+		OFCondition cond;
+
+		DcmElement* element=0;
+		cond = ds->findAndGetElement(DcmTagKey(e, g), element);
+		if (cond.bad())
+			return errCtx->putError(cond.text());
+		else
+		{
+			OFString str;
+			cond = element->getOFString(str, 0, true);
+			if (cond.bad())
+				return errCtx->putError(cond.text());
+
+			strncpy(buf, str.data(), bufSize);
+		}
+	}
+	catch(const std::exception & ex)
+	{
+		return errCtx->putError(ex.what());
+	}
+	return 0;
+}
 
 int testPrintTag(unsigned long errorCtx, unsigned long dataSetCtx, unsigned short g, unsigned short e)
 {
-	std::cout << "print begin" << std::endl;
 	ErrorCtx * errCtx = (ErrorCtx *)errorCtx;
 	try
 	{
@@ -149,7 +185,6 @@ int testPrintTag(unsigned long errorCtx, unsigned long dataSetCtx, unsigned shor
 	{
 		return errCtx->putError(ex.what());
 	}
-	std::cout << "print done" << std::endl;
 	return 0;
 }
 
