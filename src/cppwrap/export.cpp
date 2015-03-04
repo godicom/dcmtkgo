@@ -51,12 +51,13 @@ int makeGetErrorCtx(unsigned long * errorCtx)
 	{
 		ErrorCtx * ctx = new ErrorCtx();
 		*errorCtx = (unsigned long)ctx;
-		return true;
+		return 0;
 	}
 	catch(...)
 	{
-		return false;
+		return 1;
 	}
+	return 1;
 }
 
 void closeErrorCtx(unsigned long errorCtx)
@@ -111,11 +112,13 @@ int openDcmtkDataSet(unsigned long errorCtx, const char * fileName, unsigned lon
 		return errCtx->putError(ex.what());
 	}
 
+	std::cout << "Open ds done" << std::endl;
 	return 0;
 }
 
 int testPrintTag(unsigned long errorCtx, unsigned long dataSetCtx, unsigned short g, unsigned short e)
 {
+	std::cout << "print begin" << std::endl;
 	ErrorCtx * errCtx = (ErrorCtx *)errorCtx;
 	try
 	{
@@ -141,6 +144,7 @@ int testPrintTag(unsigned long errorCtx, unsigned long dataSetCtx, unsigned shor
 	{
 		return errCtx->putError(ex.what());
 	}
+	std::cout << "print done" << std::endl;
 	return 0;
 }
 
