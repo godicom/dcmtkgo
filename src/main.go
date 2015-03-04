@@ -7,22 +7,36 @@ package main
 // #cgo CFLAGS: -I./cppwrap
 // #cgo LDFLAGS: -L./cppwrap  -ldcmtkgo -ldcmdata -lz -lofstd -loflog -lc++
 // #include <export.h>
+// #include <stdlib.h>
 import "C"
 import (
 	"fmt"
+	"unsafe"
 )
+
+func printError(errCtx C.ulong, errId C.int) {
+	fmt.Println("checking error")
+	var errStr [256]C.char
+	C.getError(errCtx, errId, &errStr[0], 256)
+	fmt.Println(C.GoString(&errStr[0]))
+}
 
 func main() {
 	fmt.Printf("Invoking c library...\n")
 	//var errCtx C.ulong = 0
 	var errCtx C.ulong = 0
 	var dsCtx C.ulong = 0
+	path := C.CString("empty")
 	C.makeGetErrorCtx(&errCtx)
-	var errId C.int = C.openDcmtkDataSet(errCtx, "empty", &dsCtx)
+	errId := C.openDcmtkDataSet(errCtx, path, &dsCtx)
 	if errId != 0 {
-		var errStr [256]C.char
-		C.getError(errCtx, errId, &errStr[0], 256)
+		printError(errCtx, errId)
+		return
 	}
+
+	//errId = closeDcmtkDataSet(dsCtx, )
+
+	C.free(unsafe.Pointer(path))
 
 	//path := "/Users/vladislavtroinich/data/test.dcm"
 	//C.printDCMTags(C.CString(path))
