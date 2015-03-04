@@ -29,10 +29,11 @@ type Dataset struct {
 }
 
 func (ds * Dataset) openDataSet(filename string) error {
-	if C.makeGetErrorCtx(&ds.errCtx) != 0 {
+	errId := C.makeGetErrorCtx(&ds.errCtx)
+	if  errId!= 0 {
 		return errors.New("Can't create Error ctx")
 	}
-	errId := C.openDcmtkDataSet(ds.errCtx, C.CString(filename), &ds.dsCtx)
+	errId = C.openDcmtkDataSet(ds.errCtx, C.CString(filename), &ds.dsCtx)
 	if errId != 0 {
 		return errors.New(getErrorString(ds.errCtx, errId))
 	}

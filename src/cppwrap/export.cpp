@@ -8,6 +8,7 @@
 #include <dcmtk/dcmdata/dctypes.h>
 #include <dcmtk/dcmdata/dcobject.h>
 #include <dcmtk/ofstd/ofcond.h>
+#include <exception>
 
 #include <map>
 #include <memory>
@@ -53,9 +54,13 @@ int makeGetErrorCtx(unsigned long * errorCtx)
 		*errorCtx = (unsigned long)ctx;
 		return 0;
 	}
+	catch (std::exception& e)
+	{
+		std::cout << "unknown exception " << e.what() << "\n";
+	}
 	catch(...)
 	{
-		return 1;
+		std::cout << "unknown exception\n";
 	}
 	return 1;
 }
