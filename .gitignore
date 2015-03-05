@@ -1,6 +1,6 @@
-src/cppwrap/CMakeFiles/*
-src/cppwrap/Makefile
-src/cppwrap/CMakeCache.txt
-src/cppwrap/*.a
-src/cppwrap/cmake_install.cmake
-src/src
+cppwrap/CMakeFiles/*
+cppwrap/Makefile
+cppwrap/CMakeCache.txt
+cppwrap/*.a
+cppwrap/cmake_install.cmake
+src

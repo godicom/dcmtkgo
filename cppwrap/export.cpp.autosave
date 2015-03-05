@@ -132,8 +132,35 @@ int dummySum(int a, int b)
 {
 	return a + b + ++i;
 }
-template<class T> getValue(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, T * rvValue){
 
+template<class T> getValue(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, T * rvValue){
+	ErrorCtx * errCtx = (ErrorCtx *)errorCtx;
+	try
+	{
+		DataSetContext * ctx = (DataSetContext*)dataSetCtx;
+		DcmDataset * ds = ctx->ds;
+		OFCondition cond;
+
+		DcmElement* element=0;
+		ds->findAndGetElement()
+		cond = ds->findAndGetElement(DcmTagKey(e, g), element);
+		if (cond.bad())
+			return errCtx->putError(cond.text());
+		else
+		{
+			OFString str;
+			cond = element->getOFString(str, 0, true);
+			if (cond.bad())
+				return errCtx->putError(cond.text());
+
+			strncpy(buf, str.data(), bufSize);
+		}
+	}
+	catch(const std::exception & ex)
+	{
+		return errCtx->putError(ex.what());
+	}
+	return 0;	
 }
 
 int getGetUint32(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, unsigned int * rvValue){

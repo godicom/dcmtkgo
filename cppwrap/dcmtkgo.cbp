@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+   <FileVersion major="1" minor="6" />
+   <Project>
+      <Option title="dcmtkgo" />
+      <Option makefile_is_custom="1" />
+      <Option compiler="gcc" />
+      <Option virtualFolders="CMake Files\;" />
+      <Build>
+      <Target title="all">
+         <Option working_dir="/home/antlad/projects/dcmtkgo/cppwrap" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/antlad/projects/dcmtkgo/cppwrap/Makefile&quot;  VERBOSE=1 all" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/antlad/projects/dcmtkgo/cppwrap/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/antlad/projects/dcmtkgo/cppwrap/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/antlad/projects/dcmtkgo/cppwrap/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="dcmtkgo">
+         <Option output="/home/antlad/projects/dcmtkgo/cppwrap/libdcmtkgo.a" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/antlad/projects/dcmtkgo/cppwrap" />
+         <Option object_output="./" />
+         <Option type="2" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add option="-DHAVE_CONFIG_H" />
+            <Add directory="/usr/include/dcmtk" />
+            <Add directory="/usr/include/dcmtk/config" />
+            <Add directory="/usr/include/dcmtk/dcmdata" />
+            <Add directory="/usr/include/dcmtk/dcmimage" />
+            <Add directory="/usr/include/dcmtk/dcmimgle" />
+            <Add directory="/usr/include/dcmtk/dcmjpeg" />
+            <Add directory="/usr/include/dcmtk/dcmnet" />
+            <Add directory="/usr/include/dcmtk/dcmpstat" />
+            <Add directory="/usr/include/dcmtk/dcmqrdb" />
+            <Add directory="/usr/include/dcmtk/dcmsign" />
+            <Add directory="/usr/include/dcmtk/dcmsr" />
+            <Add directory="/usr/include/dcmtk/dcmtls" />
+            <Add directory="/usr/include/dcmtk/ofstd" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/antlad/projects/dcmtkgo/cppwrap/Makefile&quot;  VERBOSE=1 dcmtkgo" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/antlad/projects/dcmtkgo/cppwrap/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/antlad/projects/dcmtkgo/cppwrap/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/antlad/projects/dcmtkgo/cppwrap/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="dcmtkgo/fast">
+         <Option output="/home/antlad/projects/dcmtkgo/cppwrap/libdcmtkgo.a" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/antlad/projects/dcmtkgo/cppwrap" />
+         <Option object_output="./" />
+         <Option type="2" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add option="-DHAVE_CONFIG_H" />
+            <Add directory="/usr/include/dcmtk" />
+            <Add directory="/usr/include/dcmtk/config" />
+            <Add directory="/usr/include/dcmtk/dcmdata" />
+            <Add directory="/usr/include/dcmtk/dcmimage" />
+            <Add directory="/usr/include/dcmtk/dcmimgle" />
+            <Add directory="/usr/include/dcmtk/dcmjpeg" />
+            <Add directory="/usr/include/dcmtk/dcmnet" />
+            <Add directory="/usr/include/dcmtk/dcmpstat" />
+            <Add directory="/usr/include/dcmtk/dcmqrdb" />
+            <Add directory="/usr/include/dcmtk/dcmsign" />
+            <Add directory="/usr/include/dcmtk/dcmsr" />
+            <Add directory="/usr/include/dcmtk/dcmtls" />
+            <Add directory="/usr/include/dcmtk/ofstd" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/antlad/projects/dcmtkgo/cppwrap/Makefile&quot;  VERBOSE=1 dcmtkgo/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/antlad/projects/dcmtkgo/cppwrap/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/antlad/projects/dcmtkgo/cppwrap/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/antlad/projects/dcmtkgo/cppwrap/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="edit_cache">
+         <Option working_dir="/home/antlad/projects/dcmtkgo/cppwrap" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/antlad/projects/dcmtkgo/cppwrap/Makefile&quot;  VERBOSE=1 edit_cache" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/antlad/projects/dcmtkgo/cppwrap/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/antlad/projects/dcmtkgo/cppwrap/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/antlad/projects/dcmtkgo/cppwrap/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="rebuild_cache">
+         <Option working_dir="/home/antlad/projects/dcmtkgo/cppwrap" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/antlad/projects/dcmtkgo/cppwrap/Makefile&quot;  VERBOSE=1 rebuild_cache" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/antlad/projects/dcmtkgo/cppwrap/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/antlad/projects/dcmtkgo/cppwrap/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/antlad/projects/dcmtkgo/cppwrap/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      </Build>
+      <Unit filename="/home/antlad/projects/dcmtkgo/cppwrap/export.cpp">
+      </Unit>
+      <Unit filename="/home/antlad/projects/dcmtkgo/cppwrap/export.h">
+      </Unit>
+      <Unit filename="/home/antlad/projects/dcmtkgo/cppwrap/CMakeLists.txt">
+          <Option virtualFolder="CMake Files\" />
+      </Unit>
+   </Project>
+</CodeBlocks_project_file>
