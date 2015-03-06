@@ -72,10 +72,10 @@ void closeErrorCtx(unsigned long errorCtx)
 	delete ctx;
 }
 
-int getGetUint32(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, unsigned int * rvValue)
-{
-	return 0;
-}
+// int getGetUint32(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, unsigned int * rvValue)
+// {
+// 	return 0;
+// }
 
 int getError(unsigned long errorCtx, int errorId, char * buf, unsigned long bufSize)
 {
@@ -132,37 +132,37 @@ int dummySum(int a, int b)
 {
 	return a + b + ++i;
 }
-template<class T> getValue(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, T * rvValue){
+// template<class T> getValue(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, T * rvValue){
 
-}
+// }
 
-int getGetUint32(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, unsigned int * rvValue){
+// int getGetUint32(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, unsigned int * rvValue){
 
-}
+// }
 
-int getGetSint32(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, int * rvValue){
+// int getGetSint32(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, int * rvValue){
 
-}
+// }
 
-int getGetUint16(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, unsigned short* rvValue){
+// int getGetUint16(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, unsigned short* rvValue){
 
-}
+// }
 
-int getGetSint16(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, short* rvValue){
+// int getGetSint16(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, short* rvValue){
 
-}
+// }
 
-int getGetUint8(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, unsigned char* rvValue){
+// int getGetUint8(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, unsigned char* rvValue){
 
-}
+// }
 
-int getGetSint8(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, char* rvValue){
+// int getGetSint8(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, char* rvValue){
 
-}
+// }
 
 
 
-int getString(unsigned long errorCtx, unsigned long dataSetCtx, unsigned short g, unsigned short e, char * buf, int bufSize)
+int getString(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, char * buf, int bufSize)
 {
 	ErrorCtx * errCtx = (ErrorCtx *)errorCtx;
 	try
@@ -172,6 +172,10 @@ int getString(unsigned long errorCtx, unsigned long dataSetCtx, unsigned short g
 		OFCondition cond;
 
 		DcmElement* element=0;
+		// TODO: check order
+		unsigned short e = g_e & 0xFFFF;
+		unsigned short g = (g_e & 0xFFFF0000) >> 16;	
+		
 		cond = ds->findAndGetElement(DcmTagKey(e, g), element);
 		if (cond.bad())
 			return errCtx->putError(cond.text());

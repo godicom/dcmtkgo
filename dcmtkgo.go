@@ -45,25 +45,25 @@ func (ds *Dataset) openDataSet(filename string) error {
 	}
 	return nil
 }
-func (ds *Dataset) getSint32(g_e uint32) (int32, error) {
-	var value C.int
-	errId := C.getGetSint32(ds.errCtx, ds.dsCtx, C.uint(g_e), &value)
-	if errId != 0 {
-		return 0, errors.New(getErrorString(ds.errCtx, errId))
-	}
+// func (ds *Dataset) getSint32(g_e uint32) (int32, error) {
+// 	var value C.int
+// 	errId := C.getGetSint32(ds.errCtx, ds.dsCtx, C.uint(g_e), &value)
+// 	if errId != 0 {
+// 		return 0, errors.New(getErrorString(ds.errCtx, errId))
+// 	}
 
-	return int32(value), nil
-}
+// 	return int32(value), nil
+// }
 
-func (ds *Dataset) getUint32(g_e uint32) (uint32, error) {
-	var value C.uint
-	errId := C.getGetUint32(ds.errCtx, ds.dsCtx, C.uint(g_e), &value)
-	if errId != 0 {
-		return 0, errors.New(getErrorString(ds.errCtx, errId))
-	}
+// func (ds *Dataset) getUint32(g_e uint32) (uint32, error) {
+// 	var value C.uint
+// 	errId := C.getGetUint32(ds.errCtx, ds.dsCtx, C.uint(g_e), &value)
+// 	if errId != 0 {
+// 		return 0, errors.New(getErrorString(ds.errCtx, errId))
+// 	}
 
-	return uint32(value), nil
-}
+// 	return uint32(value), nil
+// }
 
 func (ds *Dataset) getString(g_e uint32) (string, error) {
 
