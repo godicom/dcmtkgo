@@ -72,7 +72,7 @@ void closeErrorCtx(unsigned long errorCtx)
 	delete ctx;
 }
 
-// int getGetUint32(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, unsigned int * rvValue)
+// int getUint32(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, unsigned int * rvValue)
 // {
 //  return 0;
 // }
@@ -213,27 +213,35 @@ int getValue(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e,
 	return 0;
 }
 
-int getGetUint32(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, unsigned int *rvValue) {
+int getFloat32(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, float * rvValue) {
 	return getValue(errorCtx, dataSetCtx, g_e, rvValue);
 }
 
-int getGetSint32(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, int *rvValue) {
+int getFloat64(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, double * rvValue) {
 	return getValue(errorCtx, dataSetCtx, g_e, rvValue);
 }
 
-int getGetUint16(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, unsigned short *rvValue) {
+int getUint32(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, unsigned int *rvValue) {
 	return getValue(errorCtx, dataSetCtx, g_e, rvValue);
 }
 
-int getGetSint16(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, short *rvValue) {
+int getSint32(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, int *rvValue) {
 	return getValue(errorCtx, dataSetCtx, g_e, rvValue);
 }
 
-int getGetUint8(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, unsigned char *rvValue) {
+int getUint16(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, unsigned short *rvValue) {
 	return getValue(errorCtx, dataSetCtx, g_e, rvValue);
 }
 
-int getGetSint8(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, char *rvValue) {
+int getSint16(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, short *rvValue) {
+	return getValue(errorCtx, dataSetCtx, g_e, rvValue);
+}
+
+int getUint8(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, unsigned char *rvValue) {
+	return getValue(errorCtx, dataSetCtx, g_e, rvValue);
+}
+
+int getSint8(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, char *rvValue) {
 	return getValue(errorCtx, dataSetCtx, g_e, rvValue);
 }
 

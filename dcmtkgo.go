@@ -45,28 +45,72 @@ func (ds *Dataset) openDataSet(filename string) error {
 	}
 	return nil
 }
-// func (ds *Dataset) getSint32(g_e uint32) (int32, error) {
-// 	var value C.int
-// 	errId := C.getGetSint32(ds.errCtx, ds.dsCtx, C.uint(g_e), &value)
-// 	if errId != 0 {
-// 		return 0, errors.New(getErrorString(ds.errCtx, errId))
-// 	}
 
-// 	return int32(value), nil
-// }
+func (ds *Dataset) getSint32(g_e uint32) (int32, error) {
+	var value C.int
+	errId := C.getSint32(ds.errCtx, ds.dsCtx, C.uint(g_e), &value)
+	if errId != 0 {
+		return 0, errors.New(getErrorString(ds.errCtx, errId))
+	}
+	return int32(value), nil
+}
 
-// func (ds *Dataset) getUint32(g_e uint32) (uint32, error) {
-// 	var value C.uint
-// 	errId := C.getGetUint32(ds.errCtx, ds.dsCtx, C.uint(g_e), &value)
-// 	if errId != 0 {
-// 		return 0, errors.New(getErrorString(ds.errCtx, errId))
-// 	}
+func (ds *Dataset) getUint32(g_e uint32) (uint32, error) {
+	var value C.uint
+	errId := C.getUint32(ds.errCtx, ds.dsCtx, C.uint(g_e), &value)
+	if errId != 0 {
+		return 0, errors.New(getErrorString(ds.errCtx, errId))
+	}
+	return uint32(value), nil
+}
 
-// 	return uint32(value), nil
-// }
+func (ds *Dataset) getSint16(g_e uint32) (int16, error) {
+	var value C.short
+	errId := C.getSint16(ds.errCtx, ds.dsCtx, C.uint(g_e), &value)
+	if errId != 0 {
+		return 0, errors.New(getErrorString(ds.errCtx, errId))
+	}
+	return int16(value), nil
+}
+
+func (ds *Dataset) getUint16(g_e uint32) (uint16, error) {
+	var value C.ushort
+	errId := C.getUint16(ds.errCtx, ds.dsCtx, C.uint(g_e), &value)
+	if errId != 0 {
+		return 0, errors.New(getErrorString(ds.errCtx, errId))
+	}
+	return uint16(value), nil
+}
+
+func (ds *Dataset) getUint8(g_e uint32) (uint8, error) {
+	var value C.uchar
+	errId := C.getUint8(ds.errCtx, ds.dsCtx, C.uint(g_e), &value)
+	if errId != 0 {
+		return 0, errors.New(getErrorString(ds.errCtx, errId))
+	}
+	return uint8(value), nil
+}
+
+func (ds *Dataset) getFloat32	(g_e uint32) (float32, error) {
+	var value C.float
+	errId := C.getFloat32(ds.errCtx, ds.dsCtx, C.uint(g_e), &value)
+	if errId != 0 {
+		return 0, errors.New(getErrorString(ds.errCtx, errId))
+	}
+	return float32(value), nil
+}
+
+func (ds *Dataset) getFloat64	(g_e uint32) (float64, error) {
+	var value C.double
+	errId := C.getFloat64(ds.errCtx, ds.dsCtx, C.uint(g_e), &value)
+	if errId != 0 {
+		return 0, errors.New(getErrorString(ds.errCtx, errId))
+	}
+	return float64(value), nil
+}
+
 
 func (ds *Dataset) getString(g_e uint32) (string, error) {
-
 // TODO: do something with this buffer 
 	var errStr [256]C.char
 	errId := C.getString(ds.errCtx, ds.dsCtx, C.uint(g_e), &errStr[0], 256)
