@@ -144,7 +144,6 @@ enum DCMItemsTypes
 	DCMSint8
 };
 
-
 template<class T>
 struct CallSwither{
 	CallSwither(DcmDataset *,DcmTagKey &, T & , OFCondition & )
@@ -188,29 +187,6 @@ template<> struct CallSwither<unsigned char>{
 		cond = ds->findAndGetUint8(tag, value);
 }};
 
-
-template<class T>
-OFCondition makeCall(DcmDataset *ds, DcmTagKey & tag, T & value)
-{
-	OFCondition cond;
-	CallSwither<T>(ds, tag, value, cond);
-	return cond;
-}
-
-
-template<typename T>
-struct ItemTypeSwitch{};
-
-//template<> struct ItemTypeSwitch<float>{ static int value = DCMfloat;};
-//template<> struct ItemTypeSwitch<double>{ static int value = DCMdouble;};
-
-//template<> struct ItemTypeSwitch<int>{ static int value = DCMSint32;};
-//template<> struct ItemTypeSwitch<short>{ static int value = DCMSint16;};
-//template<> struct ItemTypeSwitch<char>{ static int value = DCMSint8;};
-//template<> struct ItemTypeSwitch<unsigned int>{ static int value = DCMUint32;};
-//template<> struct ItemTypeSwitch<unsigned short>{ static int value = DCMUint16;};
-//template<> struct ItemTypeSwitch<unsigned char>{ static int value = DCMUint8;};
-
 template<class T>
 int getValue(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, T *rvValue)
 {
@@ -225,20 +201,8 @@ int getValue(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e,
 		unsigned short e = g_e & 0xFFFF;
 		unsigned short g = (g_e & 0xFFFF0000) >> 16;
 		DcmTagKey tag(e, g);
-		cond = makeCall(ds, tag, *rvValue);
 
-//		switch(ItemTypeSwitch::value)
-//		{
-//		case DCMfloat: cond = ds->findAndGetFloat32(DcmTagKey(e, g), *rvValue); break;
-//		case DCMdouble: cond = ds->findAndGetFloat64(DcmTagKey(e, g), *rvValue); break;
-//		case DCMUint32: cond = ds->findAndGetUint32(DcmTagKey(e, g), *rvValue); break;
-//		case DCMSint32: cond = ds->findAndGetSint32(DcmTagKey(e, g), *rvValue); break;
-//		case DCMUint16: cond = ds->findAndGetUint16(DcmTagKey(e, g), *rvValue); break;
-//		case DCMSint16: cond = ds->findAndGetSint16(DcmTagKey(e, g), *rvValue); break;
-//		case DCMUint8: cond = ds->findAndGetUint8(DcmTagKey(e, g), *rvValue); break;
-//		case DCMSint8: cond = ds->findAndGetSint8(DcmTagKey(e, g), *rvValue); break;
-//		}
-
+		CallSwither<T>(ds, tag, *rvValue, cond);
 		if (cond.bad())
 			return errCtx->putError(cond.text());
 	}
