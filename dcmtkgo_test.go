@@ -1,21 +1,9 @@
 package dcmtkgo
 
+// Rral tests
 import (
-	"runtime"
 	"testing"
 )
-
-//Some dirty test of finalizer
-// func TestFinalazier(t *testing.T) {
-// 	for i := 0; i < 10; i++ {
-// 		ds, err := OpenDataset("test_files/test_sr.dcm")
-// 		ds.GetString(SOPInstanceUID)
-// 		if err != nil {
-// 			t.Fatal(err)
-// 		}
-// 		runtime.GC()
-// 	}
-// }
 
 func TestGetString(t *testing.T) {
 	cases := []struct {
