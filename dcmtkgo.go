@@ -48,6 +48,10 @@ func (ds *dataset) GetInt32(tag uint32) (int32, error) {
 	return int32(value), nil
 }
 
+func (ds *dataset) GetInt32Array(tag uint32) ([]int32, error) {
+	return nil, nil
+}
+
 func (ds *dataset) GetUint32(tag uint32) (uint32, error) {
 	var value C.uint
 	errId := C.getUint32(ds.errCtx, ds.dsCtx, C.uint(tag), &value)
@@ -55,6 +59,10 @@ func (ds *dataset) GetUint32(tag uint32) (uint32, error) {
 		return 0, errors.New(getErrorString(ds.errCtx, errId))
 	}
 	return uint32(value), nil
+}
+
+func (ds *dataset) GetUint32Array(tag uint32) ([]uint32, error) {
+	return nil, nil
 }
 
 func (ds *dataset) GetInt16(tag uint32) (int16, error) {
@@ -66,6 +74,10 @@ func (ds *dataset) GetInt16(tag uint32) (int16, error) {
 	return int16(value), nil
 }
 
+func (ds *dataset) GetInt16Array(tag uint32) ([]int16, error) {
+	return nil, nil
+}
+
 func (ds *dataset) GetUint16(tag uint32) (uint16, error) {
 	var value C.ushort
 	errId := C.getUint16(ds.errCtx, ds.dsCtx, C.uint(tag), &value)
@@ -73,6 +85,10 @@ func (ds *dataset) GetUint16(tag uint32) (uint16, error) {
 		return 0, errors.New(getErrorString(ds.errCtx, errId))
 	}
 	return uint16(value), nil
+}
+
+func (ds *dataset) GetUint16Array(tag uint32) ([]uint16, error) {
+	return nil, nil
 }
 
 func (ds *dataset) GetUint8(tag uint32) (uint8, error) {
@@ -84,6 +100,10 @@ func (ds *dataset) GetUint8(tag uint32) (uint8, error) {
 	return uint8(value), nil
 }
 
+func (ds *dataset) GetUint8Array(tag uint32) ([]uint8, error) {
+	return nil, nil
+}
+
 func (ds *dataset) GetFloat32(tag uint32) (float32, error) {
 	var value C.float
 	errId := C.getFloat32(ds.errCtx, ds.dsCtx, C.uint(tag), &value)
@@ -91,6 +111,10 @@ func (ds *dataset) GetFloat32(tag uint32) (float32, error) {
 		return 0, errors.New(getErrorString(ds.errCtx, errId))
 	}
 	return float32(value), nil
+}
+
+func (ds *dataset) GetFloat32Array(tag uint32) ([]float32, error) {
+	return nil, nil
 }
 
 func (ds *dataset) GetFloat64(tag uint32) (float64, error) {
@@ -102,6 +126,10 @@ func (ds *dataset) GetFloat64(tag uint32) (float64, error) {
 	return float64(value), nil
 }
 
+func (ds *dataset) GetFloat64Array(tag uint32) ([]float64, error) {
+	return nil, nil
+}
+
 func (ds *dataset) GetString(tag uint32) (string, error) {
 	// TODO: do something with this buffer
 	var errStr [256]C.char
@@ -111,6 +139,62 @@ func (ds *dataset) GetString(tag uint32) (string, error) {
 	}
 
 	return C.GoString(&errStr[0]), nil
+}
+
+func (ds *dataset) SetString(tag uint32, value string) error {
+	return nil
+}
+
+func (ds *dataset) SetUint8Array(tag uint32, values []uint8) error {
+	return nil
+}
+
+func (ds *dataset) SetUint16(tag uint32, value uint16) error {
+	return nil
+}
+
+func (ds *dataset) SetUint16Array(tag uint32, values []uint16) error {
+	return nil
+}
+
+func (ds *dataset) SetInt16(tag uint32, value int16) error {
+	return nil
+}
+
+func (ds *dataset) SetInt16Array(tag uint32, value []uint16) error {
+	return nil
+}
+
+func (ds *dataset) SetUint32(tag uint32, value uint32) error {
+	return nil
+}
+
+func (ds *dataset) SetUint32Array(tag, uint32, values []uint32) error {
+	return nil
+}
+
+func (ds *dataset) SetInt32(tag uint32, value int32) error {
+	return nil
+}
+
+func (ds *dataset) SetInt32Array(tag uint32, values []uint32) error {
+	return nil
+}
+
+func (ds *dataset) SetFloat32(tag uint32, value float32) error {
+	return nil
+}
+
+func (ds *dataset) SetFloat32Array(tag uint32, value []float32) error {
+	return nil
+}
+
+func (ds *dataset) SetFloat64(tag uint32, value float64) error {
+	return nil
+}
+
+func (ds *dataset) SetFloat64Array(tag uint32, value []float64) error {
+	return nil
 }
 
 func closeDataSet(ds *dataset) error {
