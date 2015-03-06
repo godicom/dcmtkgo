@@ -95,7 +95,6 @@ int getError(unsigned long errorCtx, int errorId, char *buf, unsigned long bufSi
 struct DataSetContext
 {
 	DcmFileFormat dsFile;
-
 	DcmDataset *ds;
 };
 
@@ -123,7 +122,7 @@ int openDcmtkDataSet(unsigned long errorCtx, const char *fileName, unsigned long
 		return errCtx->putError(ex.what());
 	}
 
-	std::cout << "Open ds done" << std::endl;
+	std::cerr << "Open ds done" << std::endl;
 	return 0;
 }
 static int i = 0;
@@ -200,7 +199,8 @@ int getValue(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e,
 		// TODO: check order
 		unsigned short e = g_e & 0xFFFF;
 		unsigned short g = (g_e & 0xFFFF0000) >> 16;
-		DcmTagKey tag(e, g);
+
+		DcmTagKey tag(g, e);
 
 		CallSwither<T>(ds, tag, *rvValue, cond);
 		if (cond.bad())
@@ -209,6 +209,10 @@ int getValue(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e,
 	catch (const std::exception &ex)
 	{
 		return errCtx->putError(ex.what());
+	}
+	catch (...)
+	{
+		return errCtx->putError("unknown exception");
 	}
 	return 0;
 }
@@ -259,7 +263,7 @@ int getString(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e
 		unsigned short e = g_e & 0xFFFF;
 		unsigned short g = (g_e & 0xFFFF0000) >> 16;
 
-		cond = ds->findAndGetElement(DcmTagKey(e, g), element);
+		cond = ds->findAndGetElement(DcmTagKey(g, e), element);
 		if (cond.bad())
 			return errCtx->putError(cond.text());
 		else
