@@ -9,10 +9,9 @@ package dcmtkgo
 // #include <export.h>
 import "C"
 import (
-	//"fmt"
 	//"unsafe"
-	//	"runtime"
 	"errors"
+	"runtime"
 )
 
 // TODO: optimize
@@ -113,11 +112,10 @@ func (ds *dataset) GetString(tag uint32) (string, error) {
 	return C.GoString(&errStr[0]), nil
 }
 
-func closeDataSet(ds *dataset) error {
+func (ds *dataset) CloseDataSet() error {
 	if ds.errCtx == 0 {
 		defer C.closeErrorCtx(ds.errCtx)
 	}
-
 	if ds.dsCtx != 0 {
 		var errId C.int = C.closeDcmtkDataSet(ds.errCtx, ds.dsCtx)
 
@@ -126,7 +124,6 @@ func closeDataSet(ds *dataset) error {
 			return errors.New(errorStr)
 		}
 	}
-
 	return nil
 }
 
@@ -134,6 +131,6 @@ func newDataset() *dataset {
 	ds := dataset{
 		errCtx: 0,
 		dsCtx:  0}
-	// runtime.SetFinalizer(&ds, closeDataSet)
+	runtime.SetFinalizer(&ds, (*dataset).CloseDataSet)
 	return &ds
 }

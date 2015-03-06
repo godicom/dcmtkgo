@@ -315,6 +315,7 @@ int testPrintTag(unsigned long errorCtx, unsigned long dataSetCtx, unsigned shor
 
 int closeDcmtkDataSet(unsigned long errorCtx, unsigned long dataSetCtx)
 {
+	std::cout << "begin close dataset from lib\n";
 	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;
 	try
 	{
@@ -325,6 +326,7 @@ int closeDcmtkDataSet(unsigned long errorCtx, unsigned long dataSetCtx)
 	{
 		return errCtx->putError(ex.what());
 	}
+	std::cout << "end close dataset from lib\n";
 	return 0;
 }
 

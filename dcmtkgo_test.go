@@ -1,6 +1,7 @@
 package dcmtkgo
 
 import (
+	"runtime"
 	"testing"
 )
 
@@ -28,4 +29,5 @@ func TestGetString(t *testing.T) {
 			t.Errorf("Expected %q, got %q", c.want, got)
 		}
 	}
+	runtime.GC()
 }
