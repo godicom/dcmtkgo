@@ -15,7 +15,7 @@
 
 extern "C"
 {
-	#include "export.h"
+#include "export.h"
 }
 
 class ErrorCtx
@@ -47,19 +47,19 @@ private:
 
 
 
-int makeGetErrorCtx(unsigned long * errorCtx)
+int makeGetErrorCtx(unsigned long *errorCtx)
 {
 	try
 	{
-		ErrorCtx * ctx = new ErrorCtx();
+		ErrorCtx *ctx = new ErrorCtx();
 		*errorCtx = (unsigned long)ctx;
 		return 0;
 	}
-	catch (std::exception& e)
+	catch (std::exception &e)
 	{
 		std::cout << "unknown exception " << e.what() << "\n";
 	}
-	catch(...)
+	catch (...)
 	{
 		std::cout << "unknown exception\n";
 	}
@@ -68,25 +68,25 @@ int makeGetErrorCtx(unsigned long * errorCtx)
 
 void closeErrorCtx(unsigned long errorCtx)
 {
-	ErrorCtx * ctx = (ErrorCtx *)errorCtx;
+	ErrorCtx *ctx = (ErrorCtx *)errorCtx;
 	delete ctx;
 }
 
 // int getGetUint32(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, unsigned int * rvValue)
 // {
-// 	return 0;
+//  return 0;
 // }
 
-int getError(unsigned long errorCtx, int errorId, char * buf, unsigned long bufSize)
+int getError(unsigned long errorCtx, int errorId, char *buf, unsigned long bufSize)
 {
 	try
 	{
-		ErrorCtx * ctx = (ErrorCtx *)errorCtx;
+		ErrorCtx *ctx = (ErrorCtx *)errorCtx;
 		std::string desc = ctx->errorTextDesc(errorId);
 		strncpy(buf, desc.c_str(), bufSize);
 		return true;
 	}
-	catch(...)
+	catch (...)
 	{
 		return false;
 	}
@@ -96,13 +96,13 @@ struct DataSetContext
 {
 	DcmFileFormat dsFile;
 
-	DcmDataset * ds;
+	DcmDataset *ds;
 };
 
-int openDcmtkDataSet(unsigned long errorCtx, const char * fileName, unsigned long * rvDataSetCtx)
+int openDcmtkDataSet(unsigned long errorCtx, const char *fileName, unsigned long *rvDataSetCtx)
 {
-	ErrorCtx * errCtx = (ErrorCtx *)errorCtx;
-	DataSetContext * ctx = 0;
+	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;
+	DataSetContext *ctx = 0;
 	try
 	{
 		ctx = new DataSetContext();
@@ -117,7 +117,7 @@ int openDcmtkDataSet(unsigned long errorCtx, const char * fileName, unsigned lon
 		*rvDataSetCtx = (unsigned long)ctx;
 
 	}
-	catch(const std::exception & ex)
+	catch (const std::exception &ex)
 	{
 		if (ctx) delete ctx;
 		return errCtx->putError(ex.what());
@@ -132,50 +132,161 @@ int dummySum(int a, int b)
 {
 	return a + b + ++i;
 }
-// template<class T> getValue(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, T * rvValue){
 
-// }
-
-// int getGetUint32(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, unsigned int * rvValue){
-
-// }
-
-// int getGetSint32(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, int * rvValue){
-
-// }
-
-// int getGetUint16(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, unsigned short* rvValue){
-
-// }
-
-// int getGetSint16(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, short* rvValue){
-
-// }
-
-// int getGetUint8(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, unsigned char* rvValue){
-
-// }
-
-// int getGetSint8(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, char* rvValue){
-
-// }
-
-
-
-int getString(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, char * buf, int bufSize)
+enum DCMItemsTypes
 {
-	ErrorCtx * errCtx = (ErrorCtx *)errorCtx;
+	DCMfloat,
+	DCMdouble,
+	DCMUint32,
+	DCMSint32,
+	DCMUint16,
+	DCMSint16,
+	DCMSint8
+};
+
+
+template<class T>
+struct CallSwither{
+	CallSwither(DcmDataset *,DcmTagKey &, T & , OFCondition & )
+	{
+		assert(false);//must be nvere called
+	}
+};
+
+template<> struct CallSwither<float>{
+	CallSwither(DcmDataset *ds, DcmTagKey & tag, float & value, OFCondition & cond)	{
+		cond = ds->findAndGetFloat32(tag, value);
+}};
+
+template<> struct CallSwither<double>{
+	CallSwither(DcmDataset *ds, DcmTagKey & tag, double & value, OFCondition & cond)	{
+		cond = ds->findAndGetFloat64(tag, value);
+}};
+
+template<> struct CallSwither<int>{
+	CallSwither(DcmDataset *ds, DcmTagKey & tag, int & value, OFCondition & cond)	{
+		cond = ds->findAndGetSint32(tag, value);
+}};
+
+template<> struct CallSwither<unsigned int>{
+	CallSwither(DcmDataset *ds, DcmTagKey & tag, unsigned int & value, OFCondition & cond)	{
+		cond = ds->findAndGetUint32(tag, value);
+}};
+
+template<> struct CallSwither<short>{
+	CallSwither(DcmDataset *ds, DcmTagKey & tag, short & value, OFCondition & cond)	{
+		cond = ds->findAndGetSint16(tag, value);
+}};
+
+template<> struct CallSwither<unsigned short>{
+	CallSwither(DcmDataset *ds, DcmTagKey & tag, unsigned short & value, OFCondition & cond)	{
+		cond = ds->findAndGetUint16(tag, value);
+}};
+
+template<> struct CallSwither<unsigned char>{
+	CallSwither(DcmDataset *ds, DcmTagKey & tag, unsigned char & value, OFCondition & cond)	{
+		cond = ds->findAndGetUint8(tag, value);
+}};
+
+
+template<class T>
+OFCondition makeCall(DcmDataset *ds, DcmTagKey & tag, T & value)
+{
+	OFCondition cond;
+	CallSwither<T>(ds, tag, value, cond);
+	return cond;
+}
+
+
+template<typename T>
+struct ItemTypeSwitch{};
+
+//template<> struct ItemTypeSwitch<float>{ static int value = DCMfloat;};
+//template<> struct ItemTypeSwitch<double>{ static int value = DCMdouble;};
+
+//template<> struct ItemTypeSwitch<int>{ static int value = DCMSint32;};
+//template<> struct ItemTypeSwitch<short>{ static int value = DCMSint16;};
+//template<> struct ItemTypeSwitch<char>{ static int value = DCMSint8;};
+//template<> struct ItemTypeSwitch<unsigned int>{ static int value = DCMUint32;};
+//template<> struct ItemTypeSwitch<unsigned short>{ static int value = DCMUint16;};
+//template<> struct ItemTypeSwitch<unsigned char>{ static int value = DCMUint8;};
+
+template<class T>
+int getValue(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, T *rvValue)
+{
+	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;
 	try
 	{
-		DataSetContext * ctx = (DataSetContext*)dataSetCtx;
-		DcmDataset * ds = ctx->ds;
+		DataSetContext *ctx = (DataSetContext *)dataSetCtx;
+		DcmDataset *ds = ctx->ds;
 		OFCondition cond;
 
-		DcmElement* element=0;
 		// TODO: check order
 		unsigned short e = g_e & 0xFFFF;
-		unsigned short g = (g_e & 0xFFFF0000) >> 16;	
-		
+		unsigned short g = (g_e & 0xFFFF0000) >> 16;
+		DcmTagKey tag(e, g);
+		cond = makeCall(ds, tag, *rvValue);
+
+//		switch(ItemTypeSwitch::value)
+//		{
+//		case DCMfloat: cond = ds->findAndGetFloat32(DcmTagKey(e, g), *rvValue); break;
+//		case DCMdouble: cond = ds->findAndGetFloat64(DcmTagKey(e, g), *rvValue); break;
+//		case DCMUint32: cond = ds->findAndGetUint32(DcmTagKey(e, g), *rvValue); break;
+//		case DCMSint32: cond = ds->findAndGetSint32(DcmTagKey(e, g), *rvValue); break;
+//		case DCMUint16: cond = ds->findAndGetUint16(DcmTagKey(e, g), *rvValue); break;
+//		case DCMSint16: cond = ds->findAndGetSint16(DcmTagKey(e, g), *rvValue); break;
+//		case DCMUint8: cond = ds->findAndGetUint8(DcmTagKey(e, g), *rvValue); break;
+//		case DCMSint8: cond = ds->findAndGetSint8(DcmTagKey(e, g), *rvValue); break;
+//		}
+
+		if (cond.bad())
+			return errCtx->putError(cond.text());
+	}
+	catch (const std::exception &ex)
+	{
+		return errCtx->putError(ex.what());
+	}
+	return 0;
+}
+
+int getGetUint32(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, unsigned int *rvValue) {
+	return getValue(errorCtx, dataSetCtx, g_e, rvValue);
+}
+
+int getGetSint32(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, int *rvValue) {
+	return getValue(errorCtx, dataSetCtx, g_e, rvValue);
+}
+
+int getGetUint16(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, unsigned short *rvValue) {
+	return getValue(errorCtx, dataSetCtx, g_e, rvValue);
+}
+
+int getGetSint16(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, short *rvValue) {
+	return getValue(errorCtx, dataSetCtx, g_e, rvValue);
+}
+
+int getGetUint8(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, unsigned char *rvValue) {
+	return getValue(errorCtx, dataSetCtx, g_e, rvValue);
+}
+
+int getGetSint8(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, char *rvValue) {
+	return getValue(errorCtx, dataSetCtx, g_e, rvValue);
+}
+
+int getString(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, char *buf, int bufSize)
+{
+	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;
+	try
+	{
+		DataSetContext *ctx = (DataSetContext *)dataSetCtx;
+		DcmDataset *ds = ctx->ds;
+		OFCondition cond;
+
+		DcmElement *element = 0;
+		// TODO: check order
+		unsigned short e = g_e & 0xFFFF;
+		unsigned short g = (g_e & 0xFFFF0000) >> 16;
+
 		cond = ds->findAndGetElement(DcmTagKey(e, g), element);
 		if (cond.bad())
 			return errCtx->putError(cond.text());
@@ -189,7 +300,7 @@ int getString(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e
 			strncpy(buf, str.data(), bufSize);
 		}
 	}
-	catch(const std::exception & ex)
+	catch (const std::exception &ex)
 	{
 		return errCtx->putError(ex.what());
 	}
@@ -198,14 +309,14 @@ int getString(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e
 
 int testPrintTag(unsigned long errorCtx, unsigned long dataSetCtx, unsigned short g, unsigned short e)
 {
-	ErrorCtx * errCtx = (ErrorCtx *)errorCtx;
+	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;
 	try
 	{
-		DataSetContext * ctx = (DataSetContext*)dataSetCtx;
-		DcmDataset * ds = ctx->ds;
+		DataSetContext *ctx = (DataSetContext *)dataSetCtx;
+		DcmDataset *ds = ctx->ds;
 		OFCondition cond;
 
-		DcmElement* element=0;
+		DcmElement *element = 0;
 		cond = ds->findAndGetElement(DcmTagKey(e, g), element);
 		if (cond.bad())
 			return errCtx->putError(cond.text());
@@ -219,7 +330,7 @@ int testPrintTag(unsigned long errorCtx, unsigned long dataSetCtx, unsigned shor
 			std::cout << str << "\n";
 		}
 	}
-	catch(const std::exception & ex)
+	catch (const std::exception &ex)
 	{
 		return errCtx->putError(ex.what());
 	}
@@ -228,13 +339,13 @@ int testPrintTag(unsigned long errorCtx, unsigned long dataSetCtx, unsigned shor
 
 int closeDcmtkDataSet(unsigned long errorCtx, unsigned long dataSetCtx)
 {
-	ErrorCtx * errCtx = (ErrorCtx *)errorCtx;
+	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;
 	try
 	{
-		DataSetContext * ctx = (DataSetContext*)dataSetCtx;
+		DataSetContext *ctx = (DataSetContext *)dataSetCtx;
 		delete ctx;
 	}
-	catch(const std::exception & ex)
+	catch (const std::exception &ex)
 	{
 		return errCtx->putError(ex.what());
 	}
@@ -242,10 +353,10 @@ int closeDcmtkDataSet(unsigned long errorCtx, unsigned long dataSetCtx)
 }
 
 
-void printDCMTags(const char * fileName)
+void printDCMTags(const char *fileName)
 {
 	std::cout << "filepath" << fileName << "\n";
-	DcmDataset * ds = 0;
+	DcmDataset *ds = 0;
 	DcmFileFormat dsFile;
 	OFCondition cond;
 	std::cout << "before open file\n";
@@ -259,8 +370,8 @@ void printDCMTags(const char * fileName)
 	{
 		ds = dsFile.getDataset();
 		std::cout << "load done\n";
-		DcmElement* element=0;
-		cond = ds->findAndGetElement(DCM_SOPClassUID,element);
+		DcmElement *element = 0;
+		cond = ds->findAndGetElement(DCM_SOPClassUID, element);
 		if (cond.bad())
 		{
 			std::cout << "fail get element\n";
