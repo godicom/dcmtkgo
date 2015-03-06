@@ -15,13 +15,6 @@ import (
 	"errors"
 )
 
-var i int
-
-func dummySummInLib(a int, b int) int {
-	i = int(C.dummySum(C.int(a+i), C.int(b)))
-	return i
-}
-
 // TODO: optimize
 func getErrorString(errCtx C.ulong, errId C.int) string {
 	var errStr [256]C.char
@@ -29,12 +22,12 @@ func getErrorString(errCtx C.ulong, errId C.int) string {
 	return C.GoString(&errStr[0])
 }
 
-type Dataset struct {
+type dataset struct {
 	errCtx C.ulong
 	dsCtx  C.ulong
 }
 
-func (ds *Dataset) openDataSet(filename string) error {
+func (ds *dataset) openDataSet(filename string) error {
 	errId := C.makeGetErrorCtx(&ds.errCtx)
 	if errId != 0 {
 		return errors.New("Can't create Error ctx")
@@ -46,74 +39,73 @@ func (ds *Dataset) openDataSet(filename string) error {
 	return nil
 }
 
-func (ds *Dataset) getSint32(g_e uint32) (int32, error) {
+func (ds *dataset) GetInt32(tag uint32) (int32, error) {
 	var value C.int
-	errId := C.getSint32(ds.errCtx, ds.dsCtx, C.uint(g_e), &value)
+	errId := C.getSint32(ds.errCtx, ds.dsCtx, C.uint(tag), &value)
 	if errId != 0 {
 		return 0, errors.New(getErrorString(ds.errCtx, errId))
 	}
 	return int32(value), nil
 }
 
-func (ds *Dataset) getUint32(g_e uint32) (uint32, error) {
+func (ds *dataset) GetUint32(tag uint32) (uint32, error) {
 	var value C.uint
-	errId := C.getUint32(ds.errCtx, ds.dsCtx, C.uint(g_e), &value)
+	errId := C.getUint32(ds.errCtx, ds.dsCtx, C.uint(tag), &value)
 	if errId != 0 {
 		return 0, errors.New(getErrorString(ds.errCtx, errId))
 	}
 	return uint32(value), nil
 }
 
-func (ds *Dataset) getSint16(g_e uint32) (int16, error) {
+func (ds *dataset) GetInt16(tag uint32) (int16, error) {
 	var value C.short
-	errId := C.getSint16(ds.errCtx, ds.dsCtx, C.uint(g_e), &value)
+	errId := C.getSint16(ds.errCtx, ds.dsCtx, C.uint(tag), &value)
 	if errId != 0 {
 		return 0, errors.New(getErrorString(ds.errCtx, errId))
 	}
 	return int16(value), nil
 }
 
-func (ds *Dataset) getUint16(g_e uint32) (uint16, error) {
+func (ds *dataset) GetUint16(tag uint32) (uint16, error) {
 	var value C.ushort
-	errId := C.getUint16(ds.errCtx, ds.dsCtx, C.uint(g_e), &value)
+	errId := C.getUint16(ds.errCtx, ds.dsCtx, C.uint(tag), &value)
 	if errId != 0 {
 		return 0, errors.New(getErrorString(ds.errCtx, errId))
 	}
 	return uint16(value), nil
 }
 
-func (ds *Dataset) getUint8(g_e uint32) (uint8, error) {
+func (ds *dataset) GetUint8(tag uint32) (uint8, error) {
 	var value C.uchar
-	errId := C.getUint8(ds.errCtx, ds.dsCtx, C.uint(g_e), &value)
+	errId := C.getUint8(ds.errCtx, ds.dsCtx, C.uint(tag), &value)
 	if errId != 0 {
 		return 0, errors.New(getErrorString(ds.errCtx, errId))
 	}
 	return uint8(value), nil
 }
 
-func (ds *Dataset) getFloat32	(g_e uint32) (float32, error) {
+func (ds *dataset) GetFloat32(tag uint32) (float32, error) {
 	var value C.float
-	errId := C.getFloat32(ds.errCtx, ds.dsCtx, C.uint(g_e), &value)
+	errId := C.getFloat32(ds.errCtx, ds.dsCtx, C.uint(tag), &value)
 	if errId != 0 {
 		return 0, errors.New(getErrorString(ds.errCtx, errId))
 	}
 	return float32(value), nil
 }
 
-func (ds *Dataset) getFloat64	(g_e uint32) (float64, error) {
+func (ds *dataset) GetFloat64(tag uint32) (float64, error) {
 	var value C.double
-	errId := C.getFloat64(ds.errCtx, ds.dsCtx, C.uint(g_e), &value)
+	errId := C.getFloat64(ds.errCtx, ds.dsCtx, C.uint(tag), &value)
 	if errId != 0 {
 		return 0, errors.New(getErrorString(ds.errCtx, errId))
 	}
 	return float64(value), nil
 }
 
-
-func (ds *Dataset) getString(g_e uint32) (string, error) {
-// TODO: do something with this buffer 
+func (ds *dataset) GetString(tag uint32) (string, error) {
+	// TODO: do something with this buffer
 	var errStr [256]C.char
-	errId := C.getString(ds.errCtx, ds.dsCtx, C.uint(g_e), &errStr[0], 256)
+	errId := C.getString(ds.errCtx, ds.dsCtx, C.uint(tag), &errStr[0], 256)
 	if errId != 0 {
 		return "", errors.New(getErrorString(ds.errCtx, errId))
 	}
@@ -121,7 +113,7 @@ func (ds *Dataset) getString(g_e uint32) (string, error) {
 	return C.GoString(&errStr[0]), nil
 }
 
-func closeDataSet(ds *Dataset) error {
+func closeDataSet(ds *dataset) error {
 	if ds.errCtx == 0 {
 		defer C.closeErrorCtx(ds.errCtx)
 	}
@@ -138,32 +130,10 @@ func closeDataSet(ds *Dataset) error {
 	return nil
 }
 
-func NewDataset() *Dataset {
-	ds := Dataset{
+func newDataset() *dataset {
+	ds := dataset{
 		errCtx: 0,
 		dsCtx:  0}
 	// runtime.SetFinalizer(&ds, closeDataSet)
 	return &ds
-}
-
-func main() {
-	// fmt.Printf("Invoking c library...\n")
-	// //var errCtx C.ulong = 0
-	// var errCtx C.ulong = 0
-	// var dsCtx C.ulong = 0
-	// path := C.CString("empty")
-	// C.makeGetErrorCtx(&errCtx)
-	// errId := C.openDcmtkDataSet(errCtx, path, &dsCtx)
-	// if errId != 0 {
-	// 	printError(errCtx, errId)
-	// 	return
-	// }
-
-	// //errId = closeDcmtkDataSet(dsCtx, )
-
-	// C.free(unsafe.Pointer(path))
-
-	// //path := "/Users/vladislavtroinich/data/test.dcm"
-	// //C.printDCMTags(C.CString(path))
-	// fmt.Printf("Done\n")
 }
