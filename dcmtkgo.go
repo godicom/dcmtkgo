@@ -9,8 +9,8 @@ package dcmtkgo
 // #include <export.h>
 import "C"
 import (
-	//"unsafe"
 	"errors"
+	"fmt"
 	"runtime"
 )
 
@@ -196,8 +196,7 @@ func (ds *dataset) SetFloat64Array(tag uint32, value []float64) error {
 	return nil
 }
 
-
-func (ds *dataset) CloseDataSet() error {
+func finalizer(ds *dataset) {
 	if ds.errCtx == 0 {
 		defer C.closeErrorCtx(ds.errCtx)
 	}
@@ -206,16 +205,16 @@ func (ds *dataset) CloseDataSet() error {
 
 		if errId != 0 {
 			errorStr := getErrorString(ds.errCtx, errId)
-			return errors.New(errorStr)
+			fmt.Println(errorStr)
 		}
 	}
-	return nil
+	return
 }
 
 func newDataset() *dataset {
-	ds := dataset{
+	ds := &dataset{
 		errCtx: 0,
 		dsCtx:  0}
-	runtime.SetFinalizer(&ds, (*dataset).CloseDataSet)
-	return &ds
+	runtime.SetFinalizer(ds, finalizer)
+	return ds
 }
