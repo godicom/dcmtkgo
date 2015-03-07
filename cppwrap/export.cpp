@@ -57,11 +57,11 @@ int makeGetErrorCtx(unsigned long *errorCtx)
 	}
 	catch (std::exception &e)
 	{
-		std::cout << "unknown exception " << e.what() << "\n";
+		std::cerr << "unknown exception " << e.what() << "\n";
 	}
 	catch (...)
 	{
-		std::cout << "unknown exception\n";
+		std::cerr << "unknown exception\n";
 	}
 	return 1;
 }
@@ -121,8 +121,10 @@ int openDcmtkDataSet(unsigned long errorCtx, const char *fileName, unsigned long
 		if (ctx) delete ctx;
 		return errCtx->putError(ex.what());
 	}
-
-	std::cerr << "Open ds done" << std::endl;
+	catch(...)
+	{
+		return errCtx->putError("unknown exception");
+	}
 	return 0;
 }
 static int i = 0;
@@ -280,6 +282,10 @@ int getString(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e
 	{
 		return errCtx->putError(ex.what());
 	}
+	catch(...)
+	{
+		return errCtx->putError("unknown exception");
+	}
 	return 0;
 }
 
@@ -326,7 +332,12 @@ int closeDcmtkDataSet(unsigned long errorCtx, unsigned long dataSetCtx)
 	{
 		return errCtx->putError(ex.what());
 	}
+	catch(...)
+	{
+		return errCtx->putError("unknown exception");
+	}
 	std::cout << "end close dataset from lib\n";
+	std::cout.flush();
 	return 0;
 }
 

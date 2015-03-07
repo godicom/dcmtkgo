@@ -10,7 +10,6 @@ package dcmtkgo
 import "C"
 import (
 	"errors"
-	"fmt"
 	"runtime"
 )
 
@@ -196,25 +195,24 @@ func (ds *dataset) SetFloat64Array(tag uint32, value []float64) error {
 	return nil
 }
 
-func finalizer(ds *dataset) {
+func (ds *dataset) CloseDataset() error {
 	if ds.errCtx == 0 {
-		defer C.closeErrorCtx(ds.errCtx)
+		defer C.closeErrorCtx(ds.errCtx) // TODO: what to do if it fail?
 	}
 	if ds.dsCtx != 0 {
 		var errId C.int = C.closeDcmtkDataSet(ds.errCtx, ds.dsCtx)
 
 		if errId != 0 {
-			errorStr := getErrorString(ds.errCtx, errId)
-			fmt.Println(errorStr)
+			return errors.New(getErrorString(ds.errCtx, errId))
 		}
 	}
-	return
+	return nil
 }
 
 func newDataset() *dataset {
 	ds := &dataset{
 		errCtx: 0,
 		dsCtx:  0}
-	runtime.SetFinalizer(ds, finalizer)
+	runtime.SetFinalizer(ds, (*dataset).CloseDataset)
 	return ds
 }
