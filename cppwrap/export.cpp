@@ -240,7 +240,13 @@ int getSint8(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e,
 	return getValue(errorCtx, dataSetCtx, g_e, rvValue);
 }
 
-int getString(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, char *buf, int bufSize)
+enum GetStringMode
+{
+	SimpleString,
+	ArrayString
+};
+
+int getCustomString(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, char *buf, int bufSize, GetStringMode mode)
 {
 	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;
 	try
@@ -253,7 +259,18 @@ int getString(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e
 		unsigned short g = (g_e & 0xFFFF0000) >> 16;
 
 		OFString str;
-		cond = ds->findAndGetOFString(DcmTagKey(g, e), str);
+		if (mode == SimpleString)
+		{
+			cond = ds->findAndGetOFString(DcmTagKey(g, e), str);
+		}
+		else if (mode == ArrayString)
+		{
+			cond = ds->findAndGetOFStringArray(DcmTagKey(g, e), str);
+		}
+		else
+		{
+			assert(false);
+		}
 		if (cond.bad())
 			return errCtx->putError(cond.text());
 		strncpy(buf, str.data(), bufSize);
@@ -267,6 +284,16 @@ int getString(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e
 		return errCtx->putError("unknown exception");
 	}
 	return 0;
+}
+
+int getString(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, char *buf, int bufSize)
+{
+	return getCustomString(errorCtx, dataSetCtx, g_e, buf, bufSize, SimpleString);
+}
+
+int getStringArray(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, char * buf, int bufSize){
+	return getCustomString(errorCtx, dataSetCtx, g_e, buf, bufSize, ArrayString);
+//	return getArray(errorCtx, dataSetCtx, g_e, rvValueArray, rvCount);
 }
 
 template<class T>
@@ -338,11 +365,6 @@ int getArray(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e,
 		return errCtx->putError("unknown exception");
 	}
 	return 0;
-}
-
-int getStringArray(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, char * buf, int bufSize){
-	return 0;
-//	return getArray(errorCtx, dataSetCtx, g_e, rvValueArray, rvCount);
 }
 
 int getFloat32Array(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, const float** rvValueArray, unsigned long * rvCount){
