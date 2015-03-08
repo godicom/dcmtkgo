@@ -49,7 +49,13 @@ func (ds *dataset) GetInt32(tag uint32) (int32, error) {
 }
 
 func (ds *dataset) GetInt32Array(tag uint32) ([]int32, error) {
-	return nil, nil
+	var array *C.int
+	var length C.ulong
+	errId := C.getSint32Array(ds.errCtx, ds.dsCtx, C.uint(tag), &array, &length)
+	if errId != 0 {
+		return nil, errors.New(getErrorString(ds.errCtx, errId))
+	}
+	return *(*[]int32)(makeSliceForArray(unsafe.Pointer(array), int(length))), nil
 }
 
 func (ds *dataset) GetUint32(tag uint32) (uint32, error) {
@@ -61,8 +67,23 @@ func (ds *dataset) GetUint32(tag uint32) (uint32, error) {
 	return uint32(value), nil
 }
 
+func makeSliceForArray(ptr unsafe.Pointer, length int) unsafe.Pointer {
+	hdr := reflect.SliceHeader{
+		Data: uintptr(ptr),
+		Len:  length,
+		Cap:  length,
+	}
+	return unsafe.Pointer(&hdr)
+}
+
 func (ds *dataset) GetUint32Array(tag uint32) ([]uint32, error) {
-	return nil, nil
+	var array *C.uint
+	var length C.ulong
+	errId := C.getUint32Array(ds.errCtx, ds.dsCtx, C.uint(tag), &array, &length)
+	if errId != 0 {
+		return nil, errors.New(getErrorString(ds.errCtx, errId))
+	}
+	return *(*[]uint32)(makeSliceForArray(unsafe.Pointer(array), int(length))), nil
 }
 
 func (ds *dataset) GetInt16(tag uint32) (int16, error) {
@@ -75,7 +96,13 @@ func (ds *dataset) GetInt16(tag uint32) (int16, error) {
 }
 
 func (ds *dataset) GetInt16Array(tag uint32) ([]int16, error) {
-	return nil, nil
+	var array *C.short
+	var length C.ulong
+	errId := C.getSint16Array(ds.errCtx, ds.dsCtx, C.uint(tag), &array, &length)
+	if errId != 0 {
+		return nil, errors.New(getErrorString(ds.errCtx, errId))
+	}
+	return *(*[]int16)(makeSliceForArray(unsafe.Pointer(array), int(length))), nil
 }
 
 func (ds *dataset) GetUint16(tag uint32) (uint16, error) {
@@ -89,21 +116,12 @@ func (ds *dataset) GetUint16(tag uint32) (uint16, error) {
 
 func (ds *dataset) GetUint16Array(tag uint32) ([]uint16, error) {
 	var array *C.ushort
-	var arrayLen C.ulong
-	errId := C.getUint16Array(ds.errCtx, ds.dsCtx, C.uint(tag), &array, &arrayLen)
+	var length C.ulong
+	errId := C.getUint16Array(ds.errCtx, ds.dsCtx, C.uint(tag), &array, &length)
 	if errId != 0 {
 		return nil, errors.New(getErrorString(ds.errCtx, errId))
 	}
-	// here missing data may be..
-	length := int(arrayLen)
-	hdr := reflect.SliceHeader{
-		Data: uintptr(unsafe.Pointer(array)),
-		Len:  length,
-		Cap:  length,
-	}
-	slice := *(*[]uint16)(unsafe.Pointer(&hdr))
-
-	return slice, nil
+	return *(*[]uint16)(makeSliceForArray(unsafe.Pointer(array), int(length))), nil
 }
 
 func (ds *dataset) GetUint8(tag uint32) (uint8, error) {
@@ -116,7 +134,13 @@ func (ds *dataset) GetUint8(tag uint32) (uint8, error) {
 }
 
 func (ds *dataset) GetUint8Array(tag uint32) ([]uint8, error) {
-	return nil, nil
+	var array *C.uchar
+	var length C.ulong
+	errId := C.getUint8Array(ds.errCtx, ds.dsCtx, C.uint(tag), &array, &length)
+	if errId != 0 {
+		return nil, errors.New(getErrorString(ds.errCtx, errId))
+	}
+	return *(*[]uint8)(makeSliceForArray(unsafe.Pointer(array), int(length))), nil
 }
 
 func (ds *dataset) GetFloat32(tag uint32) (float32, error) {
@@ -129,7 +153,13 @@ func (ds *dataset) GetFloat32(tag uint32) (float32, error) {
 }
 
 func (ds *dataset) GetFloat32Array(tag uint32) ([]float32, error) {
-	return nil, nil
+	var array *C.float
+	var length C.ulong
+	errId := C.getFloat32Array(ds.errCtx, ds.dsCtx, C.uint(tag), &array, &length)
+	if errId != 0 {
+		return nil, errors.New(getErrorString(ds.errCtx, errId))
+	}
+	return *(*[]float32)(makeSliceForArray(unsafe.Pointer(array), int(length))), nil
 }
 
 func (ds *dataset) GetFloat64(tag uint32) (float64, error) {
@@ -142,7 +172,13 @@ func (ds *dataset) GetFloat64(tag uint32) (float64, error) {
 }
 
 func (ds *dataset) GetFloat64Array(tag uint32) ([]float64, error) {
-	return nil, nil
+	var array *C.double
+	var length C.ulong
+	errId := C.getFloat64Array(ds.errCtx, ds.dsCtx, C.uint(tag), &array, &length)
+	if errId != 0 {
+		return nil, errors.New(getErrorString(ds.errCtx, errId))
+	}
+	return *(*[]float64)(makeSliceForArray(unsafe.Pointer(array), int(length))), nil
 }
 
 func (ds *dataset) GetString(tag uint32) (string, error) {
