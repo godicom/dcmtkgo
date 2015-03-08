@@ -10,6 +10,7 @@ errctx.cpp
 errctx.h
 dataset.cpp
 dataset.h
+valuegetters.cpp
 )
 
 add_definitions(-std=c++11)
