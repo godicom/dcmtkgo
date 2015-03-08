@@ -28,7 +28,6 @@ public:
 		auto it = m_errors.find(errorId);
 		if (it != m_errors.end())
 		{
-			//const ErrorDesc & desc = ;
 			buf = (*it).second;
 			m_errors.erase(it);
 		}
@@ -72,11 +71,6 @@ void closeErrorCtx(unsigned long errorCtx)
 	delete ctx;
 }
 
-// int getUint32(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, unsigned int * rvValue)
-// {
-//  return 0;
-// }
-
 int getError(unsigned long errorCtx, int errorId, char *buf, unsigned long bufSize)
 {
 	try
@@ -111,8 +105,6 @@ int openDcmtkDataSet(unsigned long errorCtx, const char *fileName, unsigned long
 			return errCtx->putError(cond.text());
 
 		ctx->ds = ctx->dsFile.getDataset();
-		//DataSetContext * ctx = new DataSetContext();
-		//ctx->dsFile.loadFile(fileName, EXS_Unknown, EGL_noChange, DCM_MaxReadLength);
 		*rvDataSetCtx = (unsigned long)ctx;
 
 	}
@@ -149,7 +141,7 @@ template<class T>
 struct CallSwither{
 	CallSwither(DcmDataset *, const DcmTagKey &, T & , OFCondition & )
 	{
-		assert(false);//must be nvere called
+		assert(false);//must be never called
 	}
 };
 
@@ -236,35 +228,6 @@ int getUint16(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e
 	return getValue(errorCtx, dataSetCtx, g_e, rvValue);
 }
 
-int getUint16Array(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, const unsigned short ** rvValueArray, unsigned long * rvCount)
-{
-	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;
-	try
-	{
-		DataSetContext *ctx = (DataSetContext *)dataSetCtx;
-		DcmDataset *ds = ctx->ds;
-		OFCondition cond;
-
-		unsigned short e = g_e & 0xFFFF;
-		unsigned short g = (g_e & 0xFFFF0000) >> 16;
-
-		cond = ds->findAndGetUint16Array(DcmTagKey(g, e), *rvValueArray, rvCount);
-		//rvValueArray = f;
-		//CallSwither<T>(ds, tag, *rvValue, cond);
-		if (cond.bad())
-			return errCtx->putError(cond.text());
-	}
-	catch (const std::exception &ex)
-	{
-		return errCtx->putError(ex.what());
-	}
-	catch (...)
-	{
-		return errCtx->putError("unknown exception");
-	}
-	return 0;
-}
-
 int getSint16(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, short *rvValue) {
 	return getValue(errorCtx, dataSetCtx, g_e, rvValue);
 }
@@ -286,22 +249,14 @@ int getString(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e
 		DcmDataset *ds = ctx->ds;
 		OFCondition cond;
 
-		DcmElement *element = 0;
 		unsigned short e = g_e & 0xFFFF;
 		unsigned short g = (g_e & 0xFFFF0000) >> 16;
 
-		cond = ds->findAndGetElement(DcmTagKey(g, e), element);
+		OFString str;
+		cond = ds->findAndGetOFString(DcmTagKey(g, e), str);
 		if (cond.bad())
 			return errCtx->putError(cond.text());
-		else
-		{
-			OFString str;
-			cond = element->getOFString(str, 0, true);
-			if (cond.bad())
-				return errCtx->putError(cond.text());
-
-			strncpy(buf, str.data(), bufSize);
-		}
+		strncpy(buf, str.data(), bufSize);
 	}
 	catch (const std::exception &ex)
 	{
@@ -314,7 +269,51 @@ int getString(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e
 	return 0;
 }
 
-int testPrintTag(unsigned long errorCtx, unsigned long dataSetCtx, unsigned short g, unsigned short e)
+template<class T>
+struct ArrayCallSwitcher{
+	ArrayCallSwitcher(DcmDataset *, const DcmTagKey &, T * , unsigned long * , OFCondition & )
+	{
+		assert(false);//must be never called
+	}
+};
+
+template<> struct ArrayCallSwitcher<const unsigned short *>{
+	ArrayCallSwitcher(DcmDataset * ds, const DcmTagKey & tag, const unsigned short ** t, unsigned long * length, OFCondition & cond){
+		cond = ds->findAndGetUint16Array(tag, *t, length);
+}};
+
+template<> struct ArrayCallSwitcher<const unsigned int *>{
+	ArrayCallSwitcher(DcmDataset * ds, const DcmTagKey & tag, const unsigned int ** t, unsigned long * length, OFCondition & cond){
+		cond = ds->findAndGetUint32Array(tag, *t, length);
+}};
+
+template<> struct ArrayCallSwitcher<const unsigned char *>{
+	ArrayCallSwitcher(DcmDataset * ds, const DcmTagKey & tag, const unsigned char ** t, unsigned long * length, OFCondition & cond){
+		cond = ds->findAndGetUint8Array(tag, *t, length);
+}};
+
+template<> struct ArrayCallSwitcher<const short *>{
+	ArrayCallSwitcher(DcmDataset * ds, const DcmTagKey & tag, const short ** t, unsigned long * length, OFCondition & cond){
+		cond = ds->findAndGetSint16Array(tag, *t, length);
+}};
+
+template<> struct ArrayCallSwitcher<const int *>{
+	ArrayCallSwitcher(DcmDataset * ds, const DcmTagKey & tag, const int ** t, unsigned long * length, OFCondition & cond){
+		cond = ds->findAndGetSint32Array(tag, *t, length);
+}};
+
+template<> struct ArrayCallSwitcher<const float *>{
+	ArrayCallSwitcher(DcmDataset * ds, const DcmTagKey & tag, const float ** t, unsigned long * length, OFCondition & cond){
+		cond = ds->findAndGetFloat32Array(tag, *t, length);
+}};
+
+template<> struct ArrayCallSwitcher<const double *>{
+	ArrayCallSwitcher(DcmDataset * ds, const DcmTagKey & tag, const double ** t, unsigned long * length, OFCondition & cond){
+		cond = ds->findAndGetFloat64Array(tag, *t, length);
+}};
+
+template<class T>
+int getArray(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, T* rvValueArray, unsigned long * rvCount)
 {
 	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;
 	try
@@ -323,25 +322,55 @@ int testPrintTag(unsigned long errorCtx, unsigned long dataSetCtx, unsigned shor
 		DcmDataset *ds = ctx->ds;
 		OFCondition cond;
 
-		DcmElement *element = 0;
-		cond = ds->findAndGetElement(DcmTagKey(e, g), element);
+		unsigned short e = g_e & 0xFFFF;
+		unsigned short g = (g_e & 0xFFFF0000) >> 16;
+
+		ArrayCallSwitcher<T>(ds, DcmTagKey(g, e), rvValueArray, rvCount, cond);
 		if (cond.bad())
 			return errCtx->putError(cond.text());
-		else
-		{
-			OFString str;
-			cond = element->getOFString(str, 0, true);
-			if (cond.bad())
-				return errCtx->putError(cond.text());
-
-			std::cout << str << "\n";
-		}
 	}
 	catch (const std::exception &ex)
 	{
 		return errCtx->putError(ex.what());
 	}
+	catch (...)
+	{
+		return errCtx->putError("unknown exception");
+	}
 	return 0;
+}
+
+int getStringArray(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, char * buf, int bufSize){
+	return 0;
+//	return getArray(errorCtx, dataSetCtx, g_e, rvValueArray, rvCount);
+}
+
+int getFloat32Array(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, const float** rvValueArray, unsigned long * rvCount){
+	return getArray(errorCtx, dataSetCtx, g_e, rvValueArray, rvCount);
+}
+
+int getFloat64Array(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, const double** rvValueArray, unsigned long * rvCount){
+	return getArray(errorCtx, dataSetCtx, g_e, rvValueArray, rvCount);
+}
+
+int getUint32Array(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, const unsigned int** rvValueArray, unsigned long * rvCount){
+	return getArray(errorCtx, dataSetCtx, g_e, rvValueArray, rvCount);
+}
+
+int getSint32Array(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, const int** rvValueArray, unsigned long * rvCount){
+	return getArray(errorCtx, dataSetCtx, g_e, rvValueArray, rvCount);
+}
+
+int getUint16Array(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, const unsigned short** rvValueArray, unsigned long * rvCount){
+	return getArray(errorCtx, dataSetCtx, g_e, rvValueArray, rvCount);
+}
+
+int getSint16Array(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, const short** rvValueArray, unsigned long * rvCount){
+	return getArray(errorCtx, dataSetCtx, g_e, rvValueArray, rvCount);
+}
+
+int getUint8Array(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, const unsigned char** rvValueArray, unsigned long * rvCount){
+	return getArray(errorCtx, dataSetCtx, g_e, rvValueArray, rvCount);
 }
 
 int closeDcmtkDataSet(unsigned long errorCtx, unsigned long dataSetCtx)
@@ -365,49 +394,4 @@ int closeDcmtkDataSet(unsigned long errorCtx, unsigned long dataSetCtx)
 	std::cout.flush();
 	return 0;
 }
-
-
-void printDCMTags(const char *fileName)
-{
-	std::cout << "filepath" << fileName << "\n";
-	DcmDataset *ds = 0;
-	DcmFileFormat dsFile;
-	OFCondition cond;
-	std::cout << "before open file\n";
-	cond = dsFile.loadFile(fileName, EXS_Unknown, EGL_noChange, DCM_MaxReadLength);
-	if (cond.bad())
-	{
-		std::cout << "fail open\n";
-		std::cout << cond.text();
-	}
-	else
-	{
-		ds = dsFile.getDataset();
-		std::cout << "load done\n";
-		DcmElement *element = 0;
-		cond = ds->findAndGetElement(DCM_SOPClassUID, element);
-		if (cond.bad())
-		{
-			std::cout << "fail get element\n";
-			std::cout << cond.text();
-		}
-		else
-		{
-			std::cout << "find and get done\n";
-			OFString str;
-			cond = element->getOFString(str, 0, true);
-			if (cond.bad())
-			{
-				std::cout << "fail get string\n";
-				std::cout << cond.text();
-			}
-			else
-			{
-				std::cout << "DCM_SOPClassUID" << str << "\n";
-			}
-		}
-	}
-	std::cout.flush();
-}
-
 
