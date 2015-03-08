@@ -147,44 +147,44 @@ enum DCMItemsTypes
 
 template<class T>
 struct CallSwither{
-	CallSwither(DcmDataset *,DcmTagKey &, T & , OFCondition & )
+	CallSwither(DcmDataset *, const DcmTagKey &, T & , OFCondition & )
 	{
 		assert(false);//must be nvere called
 	}
 };
 
 template<> struct CallSwither<float>{
-	CallSwither(DcmDataset *ds, DcmTagKey & tag, float & value, OFCondition & cond)	{
+	CallSwither(DcmDataset *ds, const DcmTagKey & tag, float & value, OFCondition & cond)	{
 		cond = ds->findAndGetFloat32(tag, value);
 }};
 
 template<> struct CallSwither<double>{
-	CallSwither(DcmDataset *ds, DcmTagKey & tag, double & value, OFCondition & cond)	{
+	CallSwither(DcmDataset *ds, const DcmTagKey & tag, double & value, OFCondition & cond)	{
 		cond = ds->findAndGetFloat64(tag, value);
 }};
 
 template<> struct CallSwither<int>{
-	CallSwither(DcmDataset *ds, DcmTagKey & tag, int & value, OFCondition & cond)	{
+	CallSwither(DcmDataset *ds, const DcmTagKey & tag, int & value, OFCondition & cond)	{
 		cond = ds->findAndGetSint32(tag, value);
 }};
 
 template<> struct CallSwither<unsigned int>{
-	CallSwither(DcmDataset *ds, DcmTagKey & tag, unsigned int & value, OFCondition & cond)	{
+	CallSwither(DcmDataset *ds, const DcmTagKey & tag, unsigned int & value, OFCondition & cond)	{
 		cond = ds->findAndGetUint32(tag, value);
 }};
 
 template<> struct CallSwither<short>{
-	CallSwither(DcmDataset *ds, DcmTagKey & tag, short & value, OFCondition & cond)	{
+	CallSwither(DcmDataset *ds, const DcmTagKey & tag, short & value, OFCondition & cond)	{
 		cond = ds->findAndGetSint16(tag, value);
 }};
 
 template<> struct CallSwither<unsigned short>{
-	CallSwither(DcmDataset *ds, DcmTagKey & tag, unsigned short & value, OFCondition & cond)	{
+	CallSwither(DcmDataset *ds, const DcmTagKey & tag, unsigned short & value, OFCondition & cond)	{
 		cond = ds->findAndGetUint16(tag, value);
 }};
 
 template<> struct CallSwither<unsigned char>{
-	CallSwither(DcmDataset *ds, DcmTagKey & tag, unsigned char & value, OFCondition & cond)	{
+	CallSwither(DcmDataset *ds, const DcmTagKey & tag, unsigned char & value, OFCondition & cond)	{
 		cond = ds->findAndGetUint8(tag, value);
 }};
 
@@ -198,13 +198,10 @@ int getValue(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e,
 		DcmDataset *ds = ctx->ds;
 		OFCondition cond;
 
-		// TODO: check order
 		unsigned short e = g_e & 0xFFFF;
 		unsigned short g = (g_e & 0xFFFF0000) >> 16;
 
-		DcmTagKey tag(g, e);
-
-		CallSwither<T>(ds, tag, *rvValue, cond);
+		CallSwither<T>(ds, DcmTagKey(g, e), *rvValue, cond);
 		if (cond.bad())
 			return errCtx->putError(cond.text());
 	}
@@ -239,6 +236,35 @@ int getUint16(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e
 	return getValue(errorCtx, dataSetCtx, g_e, rvValue);
 }
 
+int getUint16Array(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, const unsigned short ** rvValueArray, unsigned long * rvCount)
+{
+	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;
+	try
+	{
+		DataSetContext *ctx = (DataSetContext *)dataSetCtx;
+		DcmDataset *ds = ctx->ds;
+		OFCondition cond;
+
+		unsigned short e = g_e & 0xFFFF;
+		unsigned short g = (g_e & 0xFFFF0000) >> 16;
+
+		cond = ds->findAndGetUint16Array(DcmTagKey(g, e), *rvValueArray, rvCount);
+		//rvValueArray = f;
+		//CallSwither<T>(ds, tag, *rvValue, cond);
+		if (cond.bad())
+			return errCtx->putError(cond.text());
+	}
+	catch (const std::exception &ex)
+	{
+		return errCtx->putError(ex.what());
+	}
+	catch (...)
+	{
+		return errCtx->putError("unknown exception");
+	}
+	return 0;
+}
+
 int getSint16(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, short *rvValue) {
 	return getValue(errorCtx, dataSetCtx, g_e, rvValue);
 }
@@ -261,7 +287,6 @@ int getString(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e
 		OFCondition cond;
 
 		DcmElement *element = 0;
-		// TODO: check order
 		unsigned short e = g_e & 0xFFFF;
 		unsigned short g = (g_e & 0xFFFF0000) >> 16;
 

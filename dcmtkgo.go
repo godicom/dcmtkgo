@@ -10,7 +10,9 @@ package dcmtkgo
 import "C"
 import (
 	"errors"
+	"reflect"
 	"runtime"
+	"unsafe"
 )
 
 // TODO: optimize
@@ -86,7 +88,22 @@ func (ds *dataset) GetUint16(tag uint32) (uint16, error) {
 }
 
 func (ds *dataset) GetUint16Array(tag uint32) ([]uint16, error) {
-	return nil, nil
+	var array *C.ushort
+	var arrayLen C.ulong
+	errId := C.getUint16Array(ds.errCtx, ds.dsCtx, C.uint(tag), &array, &arrayLen)
+	if errId != 0 {
+		return nil, errors.New(getErrorString(ds.errCtx, errId))
+	}
+	// here missing data may be..
+	length := int(arrayLen)
+	hdr := reflect.SliceHeader{
+		Data: uintptr(unsafe.Pointer(array)),
+		Len:  length,
+		Cap:  length,
+	}
+	slice := *(*[]uint16)(unsafe.Pointer(&hdr))
+
+	return slice, nil
 }
 
 func (ds *dataset) GetUint8(tag uint32) (uint8, error) {

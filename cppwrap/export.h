@@ -10,6 +10,7 @@ int openDcmtkDataSet(unsigned long errorCtx, const char * fileName, unsigned lon
 
 int getString(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, char * buf, int bufSize);
 
+
 int getFloat32(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, float * rvValue);
 int getFloat64(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, double * rvValue);
 
@@ -17,6 +18,8 @@ int getUint32(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e
 int getSint32(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, int * rvValue);
 
 int getUint16(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, unsigned short* rvValue);
+int getUint16Array(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, const unsigned short** rvValueArray, unsigned long * rvCount);
+
 int getSint16(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, short* rvValue);
 
 int getUint8(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, unsigned char* rvValue);
