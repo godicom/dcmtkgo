@@ -30,4 +30,3 @@ int setUint32(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e
 int setSint32(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, int value);
 int setUint16(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, unsigned short value);
 int setSint16(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, short value);
-int setUint8(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, unsigned char value);

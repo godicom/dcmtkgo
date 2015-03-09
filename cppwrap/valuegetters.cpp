@@ -22,45 +22,45 @@ extern "C"
 #include "errctx.h"
 
 template<class T>
-struct CallSwither{
-	CallSwither(DcmDataset *, const DcmTagKey &, T & , OFCondition & )
+struct GetCallSwither{
+	GetCallSwither(DcmDataset *, const DcmTagKey &, T & , OFCondition & )
 	{
 		assert(false);//must be never called
 	}
 };
 
-template<> struct CallSwither<float>{
-	CallSwither(DcmDataset *ds, const DcmTagKey & tag, float & value, OFCondition & cond)	{
+template<> struct GetCallSwither<float>{
+	GetCallSwither(DcmDataset *ds, const DcmTagKey & tag, float & value, OFCondition & cond)	{
 		cond = ds->findAndGetFloat32(tag, value);
 }};
 
-template<> struct CallSwither<double>{
-	CallSwither(DcmDataset *ds, const DcmTagKey & tag, double & value, OFCondition & cond)	{
+template<> struct GetCallSwither<double>{
+	GetCallSwither(DcmDataset *ds, const DcmTagKey & tag, double & value, OFCondition & cond)	{
 		cond = ds->findAndGetFloat64(tag, value);
 }};
 
-template<> struct CallSwither<int>{
-	CallSwither(DcmDataset *ds, const DcmTagKey & tag, int & value, OFCondition & cond)	{
+template<> struct GetCallSwither<int>{
+	GetCallSwither(DcmDataset *ds, const DcmTagKey & tag, int & value, OFCondition & cond)	{
 		cond = ds->findAndGetSint32(tag, value);
 }};
 
-template<> struct CallSwither<unsigned int>{
-	CallSwither(DcmDataset *ds, const DcmTagKey & tag, unsigned int & value, OFCondition & cond)	{
+template<> struct GetCallSwither<unsigned int>{
+	GetCallSwither(DcmDataset *ds, const DcmTagKey & tag, unsigned int & value, OFCondition & cond)	{
 		cond = ds->findAndGetUint32(tag, value);
 }};
 
-template<> struct CallSwither<short>{
-	CallSwither(DcmDataset *ds, const DcmTagKey & tag, short & value, OFCondition & cond)	{
+template<> struct GetCallSwither<short>{
+	GetCallSwither(DcmDataset *ds, const DcmTagKey & tag, short & value, OFCondition & cond)	{
 		cond = ds->findAndGetSint16(tag, value);
 }};
 
-template<> struct CallSwither<unsigned short>{
-	CallSwither(DcmDataset *ds, const DcmTagKey & tag, unsigned short & value, OFCondition & cond)	{
+template<> struct GetCallSwither<unsigned short>{
+	GetCallSwither(DcmDataset *ds, const DcmTagKey & tag, unsigned short & value, OFCondition & cond)	{
 		cond = ds->findAndGetUint16(tag, value);
 }};
 
-template<> struct CallSwither<unsigned char>{
-	CallSwither(DcmDataset *ds, const DcmTagKey & tag, unsigned char & value, OFCondition & cond)	{
+template<> struct GetCallSwither<unsigned char>{
+	GetCallSwither(DcmDataset *ds, const DcmTagKey & tag, unsigned char & value, OFCondition & cond)	{
 		cond = ds->findAndGetUint8(tag, value);
 }};
 
@@ -77,7 +77,7 @@ int getValue(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e,
 		unsigned short e = g_e & 0xFFFF;
 		unsigned short g = (g_e & 0xFFFF0000) >> 16;
 
-		CallSwither<T>(ds, DcmTagKey(g, e), *rvValue, cond);
+		GetCallSwither<T>(ds, DcmTagKey(g, e), *rvValue, cond);
 		if (cond.bad())
 			return errCtx->putError(cond.text());
 	}

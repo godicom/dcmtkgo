@@ -10,6 +10,7 @@ errctx.h
 dataset.cpp
 dataset.h
 valuegetters.cpp
+valuesetters.cpp
 stringwork.cpp
 )
 
