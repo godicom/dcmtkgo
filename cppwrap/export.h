@@ -30,3 +30,8 @@ int setUint32(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e
 int setSint32(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, int value);
 int setUint16(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, unsigned short value);
 int setSint16(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, short value);
+
+int setStringArray(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, char * buf, int bufSize);
+int setUint16Array(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, const unsigned short* array, unsigned long length);
+int setSint16Array(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, const short* array, unsigned long length);
+int setUint8Array(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, const unsigned char* array, unsigned long length);

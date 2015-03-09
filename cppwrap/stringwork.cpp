@@ -76,6 +76,11 @@ int getStringArray(unsigned long errorCtx, unsigned long dataSetCtx, unsigned in
 	return getCustomString(errorCtx, dataSetCtx, g_e, buf, bufSize, ArrayString);
 }
 
+int setStringArray(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, char * buf, int bufSize){
+//	return setArray(errorCtx, dataSetCtx, g_e, bu)
+	return 0;
+}
+
 int setString(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, char * buf, int bufSize)
 {
 	return 0;

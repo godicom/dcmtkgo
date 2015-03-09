@@ -22,45 +22,45 @@ extern "C"
 #include "errctx.h"
 
 template<class T>
-struct ArrayCallSwitcher{
-	ArrayCallSwitcher(DcmDataset *, const DcmTagKey &, T * , unsigned long * , OFCondition & )
+struct GetArrayCallSwitcher{
+	GetArrayCallSwitcher(DcmDataset *, const DcmTagKey &, T * , unsigned long * , OFCondition & )
 	{
 		assert(false);//must be never called
 	}
 };
 
-template<> struct ArrayCallSwitcher<const unsigned short *>{
-	ArrayCallSwitcher(DcmDataset * ds, const DcmTagKey & tag, const unsigned short ** t, unsigned long * length, OFCondition & cond){
+template<> struct GetArrayCallSwitcher<const unsigned short *>{
+	GetArrayCallSwitcher(DcmDataset * ds, const DcmTagKey & tag, const unsigned short ** t, unsigned long * length, OFCondition & cond){
 		cond = ds->findAndGetUint16Array(tag, *t, length);
 }};
 
-template<> struct ArrayCallSwitcher<const unsigned int *>{
-	ArrayCallSwitcher(DcmDataset * ds, const DcmTagKey & tag, const unsigned int ** t, unsigned long * length, OFCondition & cond){
+template<> struct GetArrayCallSwitcher<const unsigned int *>{
+	GetArrayCallSwitcher(DcmDataset * ds, const DcmTagKey & tag, const unsigned int ** t, unsigned long * length, OFCondition & cond){
 		cond = ds->findAndGetUint32Array(tag, *t, length);
 }};
 
-template<> struct ArrayCallSwitcher<const unsigned char *>{
-	ArrayCallSwitcher(DcmDataset * ds, const DcmTagKey & tag, const unsigned char ** t, unsigned long * length, OFCondition & cond){
+template<> struct GetArrayCallSwitcher<const unsigned char *>{
+	GetArrayCallSwitcher(DcmDataset * ds, const DcmTagKey & tag, const unsigned char ** t, unsigned long * length, OFCondition & cond){
 		cond = ds->findAndGetUint8Array(tag, *t, length);
 }};
 
-template<> struct ArrayCallSwitcher<const short *>{
-	ArrayCallSwitcher(DcmDataset * ds, const DcmTagKey & tag, const short ** t, unsigned long * length, OFCondition & cond){
+template<> struct GetArrayCallSwitcher<const short *>{
+	GetArrayCallSwitcher(DcmDataset * ds, const DcmTagKey & tag, const short ** t, unsigned long * length, OFCondition & cond){
 		cond = ds->findAndGetSint16Array(tag, *t, length);
 }};
 
-template<> struct ArrayCallSwitcher<const int *>{
-	ArrayCallSwitcher(DcmDataset * ds, const DcmTagKey & tag, const int ** t, unsigned long * length, OFCondition & cond){
+template<> struct GetArrayCallSwitcher<const int *>{
+	GetArrayCallSwitcher(DcmDataset * ds, const DcmTagKey & tag, const int ** t, unsigned long * length, OFCondition & cond){
 		cond = ds->findAndGetSint32Array(tag, *t, length);
 }};
 
-template<> struct ArrayCallSwitcher<const float *>{
-	ArrayCallSwitcher(DcmDataset * ds, const DcmTagKey & tag, const float ** t, unsigned long * length, OFCondition & cond){
+template<> struct GetArrayCallSwitcher<const float *>{
+	GetArrayCallSwitcher(DcmDataset * ds, const DcmTagKey & tag, const float ** t, unsigned long * length, OFCondition & cond){
 		cond = ds->findAndGetFloat32Array(tag, *t, length);
 }};
 
-template<> struct ArrayCallSwitcher<const double *>{
-	ArrayCallSwitcher(DcmDataset * ds, const DcmTagKey & tag, const double ** t, unsigned long * length, OFCondition & cond){
+template<> struct GetArrayCallSwitcher<const double *>{
+	GetArrayCallSwitcher(DcmDataset * ds, const DcmTagKey & tag, const double ** t, unsigned long * length, OFCondition & cond){
 		cond = ds->findAndGetFloat64Array(tag, *t, length);
 }};
 
@@ -77,7 +77,7 @@ int getArray(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e,
 		unsigned short e = g_e & 0xFFFF;
 		unsigned short g = (g_e & 0xFFFF0000) >> 16;
 
-		ArrayCallSwitcher<T>(ds, DcmTagKey(g, e), rvValueArray, rvCount, cond);
+		GetArrayCallSwitcher<T>(ds, DcmTagKey(g, e), rvValueArray, rvCount, cond);
 		if (cond.bad())
 			return errCtx->putError(cond.text());
 	}
