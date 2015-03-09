@@ -24,25 +24,45 @@ extern "C"
 
 template<class T>
 struct SetArrayCallSwitcher{
-	SetArrayCallSwitcher(DcmDataset *, const DcmTagKey &, T * , unsigned long , OFCondition & )
+	SetArrayCallSwitcher(DcmElement *, T * , unsigned long , OFCondition & )
 	{
 		assert(false);//must be never called
 	}
 };
 
 template<> struct SetArrayCallSwitcher<const unsigned short *>{
-	SetArrayCallSwitcher(DcmDataset * ds, const DcmTagKey & tag, const unsigned short * t, unsigned long length, OFCondition & cond){
-		cond = ds->putAndInsertUint16Array(tag, t, length);
+	SetArrayCallSwitcher(DcmElement * e, const unsigned short * t, unsigned long length, OFCondition & cond){
+		cond = e->putUint16Array(t, length);
 }};
 
 template<> struct SetArrayCallSwitcher<const unsigned char *>{
-	SetArrayCallSwitcher(DcmDataset * ds, const DcmTagKey & tag, const unsigned char * t, unsigned long length, OFCondition & cond){
-		cond = ds->putAndInsertUint8Array(tag, t, length);
+	SetArrayCallSwitcher(DcmElement * e, const unsigned char * t, unsigned long length, OFCondition & cond){
+		cond = e->putUint8Array(t, length);
 }};
 
 template<> struct SetArrayCallSwitcher<const short *>{
-	SetArrayCallSwitcher(DcmDataset * ds, const DcmTagKey & tag, const short * t, unsigned long length, OFCondition & cond){
-		cond = ds->putAndInsertSint16Array(tag, t, length);
+	SetArrayCallSwitcher(DcmElement * e, const short * t, unsigned long length, OFCondition & cond){
+		cond = e->putSint16Array(t, length);
+}};
+
+template<> struct SetArrayCallSwitcher<const int *>{
+	SetArrayCallSwitcher(DcmElement * e, const int * t, unsigned long length, OFCondition & cond){
+		cond = e->putSint32Array(t, length);
+}};
+
+template<> struct SetArrayCallSwitcher<const unsigned int *>{
+	SetArrayCallSwitcher(DcmElement * e, const unsigned int * t, unsigned long length, OFCondition & cond){
+		cond = e->putUint32Array(t, length);
+}};
+
+template<> struct SetArrayCallSwitcher<const float *>{
+	SetArrayCallSwitcher(DcmElement * e, const float * t, unsigned long length, OFCondition & cond){
+		cond = e->putFloat32Array(t, length);
+}};
+
+template<> struct SetArrayCallSwitcher<const double *>{
+	SetArrayCallSwitcher(DcmElement * e, const double * t, unsigned long length, OFCondition & cond){
+		cond = e->putFloat64Array(t, length);
 }};
 
 
@@ -59,7 +79,14 @@ int setArray(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e,
 		unsigned short e = g_e & 0xFFFF;
 		unsigned short g = (g_e & 0xFFFF0000) >> 16;
 
-		SetArrayCallSwitcher<T>(ds, DcmTagKey(g, e), array, length, cond);
+		DcmElement * element = 0;
+		cond = newDicomElement(element, DcmTagKey(g, e));
+		if (cond.bad())
+			return errCtx->putError(cond.text());
+		SetArrayCallSwitcher<T>(element, array, length, cond);
+		if (cond.bad())
+			return errCtx->putError(cond.text());
+		cond = ds->insert(element, true);
 		if (cond.bad())
 			return errCtx->putError(cond.text());
 	}
@@ -83,5 +110,21 @@ int setSint16Array(unsigned long errorCtx, unsigned long dataSetCtx, unsigned in
 }
 
 int setUint8Array(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, const unsigned char* array, unsigned long length){
+	return setArray(errorCtx, dataSetCtx, g_e, array, length);
+}
+
+int setFloat32Array(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, const float* array, unsigned long length){
+	return setArray(errorCtx, dataSetCtx, g_e, array, length);
+}
+
+int setFloat64Array(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, const double* array, unsigned long length){
+	return setArray(errorCtx, dataSetCtx, g_e, array, length);
+}
+
+int setUint32Array(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, const unsigned int* array, unsigned long length){
+	return setArray(errorCtx, dataSetCtx, g_e, array, length);
+}
+
+int setSint32Array(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, const int* array, unsigned long length){
 	return setArray(errorCtx, dataSetCtx, g_e, array, length);
 }

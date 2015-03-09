@@ -35,3 +35,7 @@ int setStringArray(unsigned long errorCtx, unsigned long dataSetCtx, unsigned in
 int setUint16Array(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, const unsigned short* array, unsigned long length);
 int setSint16Array(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, const short* array, unsigned long length);
 int setUint8Array(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, const unsigned char* array, unsigned long length);
+int setFloat32Array(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, const float* array, unsigned long length);
+int setFloat64Array(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, const double* array, unsigned long length);
+int setUint32Array(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, const unsigned int* array, unsigned long length);
+int setSint32Array(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, const int* array, unsigned long length);
