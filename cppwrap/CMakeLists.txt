@@ -4,13 +4,13 @@ cmake_minimum_required(VERSION 2.8)
 add_definitions(-DHAVE_CONFIG_H)
 set(SRC_LIST
 arraygetters.cpp
-export.cpp
 export.h
 errctx.cpp
 errctx.h
 dataset.cpp
 dataset.h
 valuegetters.cpp
+stringwork.cpp
 )
 
 add_definitions(-std=c++11)

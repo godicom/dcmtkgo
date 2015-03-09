@@ -21,14 +21,6 @@ extern "C"
 #include "dataset.h"
 #include "errctx.h"
 
-static int i = 0;
-
-int dummySum(int a, int b)
-{
-	return a + b + ++i;
-}
-
-
 enum GetStringMode
 {
 	SimpleString,
@@ -83,6 +75,3 @@ int getString(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e
 int getStringArray(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, char * buf, int bufSize){
 	return getCustomString(errorCtx, dataSetCtx, g_e, buf, bufSize, ArrayString);
 }
-
-
-
