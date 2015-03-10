@@ -5,7 +5,6 @@
 
 struct DataSetContext
 {
-	DcmFileFormat dsFile;
 	std::unique_ptr<DcmDataset> ds;
 };
 

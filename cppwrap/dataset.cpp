@@ -8,6 +8,8 @@
 #include <dcmtk/dcmdata/dctypes.h>
 #include <dcmtk/dcmdata/dcobject.h>
 #include <dcmtk/ofstd/ofcond.h>
+#include <dcmtk/dcmdata/dcistrmb.h>
+
 #include <exception>
 
 extern "C"
@@ -48,13 +50,43 @@ int openDcmtkDataSet(unsigned long errorCtx, const char *fileName, unsigned long
 	DataSetContext *ctx = 0;
 	try
 	{
-		ctx = new DataSetContext();
-		OFCondition cond;
-		cond = ctx->dsFile.loadFile(fileName, EXS_Unknown, EGL_noChange, DCM_MaxReadLength);
+		DcmFileFormat format;
+		OFCondition cond = format.loadFile(fileName/*, EXS_Unknown, EGL_noChange, DCM_MaxReadLength*/);
 		if (cond.bad())
 			return errCtx->putError(cond.text());
 
-		ctx->ds.reset(ctx->dsFile.getAndRemoveDataset());
+		ctx = new DataSetContext();
+		ctx->ds.reset(format.getAndRemoveDataset());
+		*rvDataSetCtx = (unsigned long)ctx;
+	}
+	catch (const std::exception &ex)
+	{
+		if (ctx) delete ctx;
+			return errCtx->putError(ex.what());
+	}
+	catch(...)
+	{
+		return errCtx->putError("unknown exception");
+	}
+	return 0;
+}
+
+int createDatasetFromMemory(unsigned long errorCtx, unsigned long *rvDataSetCtx, const char * buf, unsigned int bufSize)
+{
+	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;
+	DataSetContext *ctx = 0;
+	try
+	{
+		DcmInputBufferStream stream;
+		stream.setBuffer(buf, bufSize);
+		DcmFileFormat format;
+
+		OFCondition cond = format.read(stream);
+		if (cond.bad())
+			return errCtx->putError(cond.text());
+
+		ctx = new DataSetContext();
+		ctx->ds.reset(format.getAndRemoveDataset());
 		*rvDataSetCtx = (unsigned long)ctx;
 	}
 	catch (const std::exception &ex)
@@ -77,8 +109,8 @@ int saveDcmtkDataSet(unsigned long errorCtx, unsigned long dataSetCtx, const cha
 	{
 		DataSetContext *ctx = (DataSetContext *)dataSetCtx;
 		ctx->ds->transferInit();
-		DcmFileFormat f(ctx->ds.get());
-		OFCondition cond = f.saveFile(fileName, (E_TransferSyntax)transfer);
+		DcmFileFormat format(ctx->ds.get());
+		OFCondition cond = format.saveFile(fileName, (E_TransferSyntax)transfer);
 		if (cond.bad())
 			return errCtx->putError(cond.text());
 		ctx->ds->transferEnd();
