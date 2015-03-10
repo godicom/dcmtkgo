@@ -9,6 +9,7 @@
 #include <dcmtk/dcmdata/dcobject.h>
 #include <dcmtk/ofstd/ofcond.h>
 #include <dcmtk/dcmdata/dcistrmb.h>
+#include <dcmtk/dcmdata/dcostrmb.h>
 
 #include <exception>
 
@@ -71,6 +72,28 @@ int openDcmtkDataSet(unsigned long errorCtx, const char *fileName, unsigned long
 	return 0;
 }
 
+int saveDcmtkDataSetToMemory(unsigned long errorCtx, unsigned long dataSetCtx, char * buf, unsigned int bufSize, int transfer)
+{
+	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;
+	(void)errCtx;
+	try
+	{
+		DataSetContext *ctx = (DataSetContext *)dataSetCtx;
+
+		DcmFileFormat format(ctx->ds.get());
+		DcmOutputBufferStream stream(buf, bufSize);
+
+		OFCondition cond = format.write(stream, (E_TransferSyntax)transfer, EET_ExplicitLength, 0);
+		if (cond.bad())
+			return errCtx->putError(cond.text());
+
+		stream.flush();
+
+	}
+	CHECK_EXCEPTION
+	return 0;
+}
+
 int createDatasetFromMemory(unsigned long errorCtx, unsigned long *rvDataSetCtx, const char * buf, unsigned int bufSize)
 {
 	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;
@@ -108,12 +131,12 @@ int saveDcmtkDataSet(unsigned long errorCtx, unsigned long dataSetCtx, const cha
 	try
 	{
 		DataSetContext *ctx = (DataSetContext *)dataSetCtx;
-		ctx->ds->transferInit();
+
 		DcmFileFormat format(ctx->ds.get());
 		OFCondition cond = format.saveFile(fileName, (E_TransferSyntax)transfer);
 		if (cond.bad())
 			return errCtx->putError(cond.text());
-		ctx->ds->transferEnd();
+
 	}
 	CHECK_EXCEPTION
 	return 0;

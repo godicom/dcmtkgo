@@ -21,13 +21,11 @@ int getError(unsigned long errorCtx, int errorId, char *buf, unsigned long bufSi
 	}
 }
 
-
 void closeErrorCtx(unsigned long errorCtx)
 {
 	ErrorCtx *ctx = (ErrorCtx *)errorCtx;
 	delete ctx;
 }
-
 
 int makeGetErrorCtx(unsigned long *errorCtx)
 {
@@ -47,7 +45,6 @@ int makeGetErrorCtx(unsigned long *errorCtx)
 	}
 	return 1;
 }
-
 
 std::string ErrorCtx::errorTextDesc(int errorId)
 {
