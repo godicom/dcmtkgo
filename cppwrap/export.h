@@ -2,12 +2,12 @@ int makeGetErrorCtx(unsigned long * errorCtx);
 void closeErrorCtx(unsigned long errorCtx);
 int getError(unsigned long errorCtx, int errorId, char * buf, unsigned long bufSize);
 
-int createEmptyDcmtkDataSet(unsigned long errorCtx, unsigned long *rvDataSetCtx);
-int createDatasetFromMemory(unsigned long errorCtx, unsigned long *rvDataSetCtx, const unsigned char * buf, unsigned int bufSize);
-int openDcmtkDataSet(unsigned long errorCtx, const char * fileName, unsigned long *rvDataSetCtx);
-int saveDcmtkDataSet(unsigned long errorCtx, unsigned long dataSetCtx, const char * fileName, int transfer);
-int saveDcmtkDataSetToMemory(unsigned long errorCtx, unsigned long dataSetCtx, char * buf, unsigned int bufSize, int transfer);
-int closeDcmtkDataSet(unsigned long errorCtx, unsigned long dataSetCtx);
+int createEmptyDcmtkDataset(unsigned long errorCtx, unsigned long *rvDatasetCtx);
+int createDatasetFromMemory(unsigned long errorCtx, unsigned long *rvDatasetCtx, const unsigned char * buf, unsigned int bufSize);
+int openDcmtkDataset(unsigned long errorCtx, const char * fileName, unsigned long *rvDatasetCtx);
+int saveDcmtkDataset(unsigned long errorCtx, unsigned long dataSetCtx, const char * fileName, int transfer);
+int saveDcmtkDatasetToMemory(unsigned long errorCtx, unsigned long dataSetCtx, char * buf, unsigned int bufSize, int transfer);
+int closeDcmtkDataset(unsigned long errorCtx, unsigned long dataSetCtx);
 
 int getString(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, char * buf, int bufSize);
 int getFloat32(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, float * rvValue);

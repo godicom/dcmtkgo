@@ -70,7 +70,7 @@ int getValue(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e,
 	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;
 	try
 	{
-		DataSetContext *ctx = (DataSetContext *)dataSetCtx;
+		DatasetContext *ctx = (DatasetContext *)dataSetCtx;
 		OFCondition cond;
 
 		unsigned short e = g_e & 0xFFFF;

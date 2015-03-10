@@ -21,15 +21,15 @@ extern "C"
 #include "dataset.h"
 #include "errctx.h"
 
-int createEmptyDcmtkDataSet(unsigned long errorCtx, unsigned long *rvDataSetCtx)
+int createEmptyDcmtkDataset(unsigned long errorCtx, unsigned long *rvDatasetCtx)
 {
 	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;
-	DataSetContext *ctx = 0;
+	DatasetContext *ctx = 0;
 	try
 	{
-		ctx = new DataSetContext();
+		ctx = new DatasetContext();
 		ctx->ds.reset(new DcmDataset());
-		*rvDataSetCtx = (unsigned long)ctx;
+		*rvDatasetCtx = (unsigned long)ctx;
 
 	}
 	catch (const std::exception &ex)
@@ -45,10 +45,10 @@ int createEmptyDcmtkDataSet(unsigned long errorCtx, unsigned long *rvDataSetCtx)
 
 }
 
-int openDcmtkDataSet(unsigned long errorCtx, const char *fileName, unsigned long *rvDataSetCtx)
+int openDcmtkDataset(unsigned long errorCtx, const char *fileName, unsigned long *rvDatasetCtx)
 {
 	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;
-	DataSetContext *ctx = 0;
+	DatasetContext *ctx = 0;
 	try
 	{
 		DcmFileFormat format;
@@ -56,9 +56,9 @@ int openDcmtkDataSet(unsigned long errorCtx, const char *fileName, unsigned long
 		if (cond.bad())
 			return errCtx->putError(cond.text());
 
-		ctx = new DataSetContext();
+		ctx = new DatasetContext();
 		ctx->ds.reset(format.getAndRemoveDataset());
-		*rvDataSetCtx = (unsigned long)ctx;
+		*rvDatasetCtx = (unsigned long)ctx;
 	}
 	catch (const std::exception &ex)
 	{
@@ -72,13 +72,13 @@ int openDcmtkDataSet(unsigned long errorCtx, const char *fileName, unsigned long
 	return 0;
 }
 
-int saveDcmtkDataSetToMemory(unsigned long errorCtx, unsigned long dataSetCtx, char * buf, unsigned int bufSize, int transfer)
+int saveDcmtkDatasetToMemory(unsigned long errorCtx, unsigned long dataSetCtx, char * buf, unsigned int bufSize, int transfer)
 {
 	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;
 	(void)errCtx;
 	try
 	{
-		DataSetContext *ctx = (DataSetContext *)dataSetCtx;
+		DatasetContext *ctx = (DatasetContext *)dataSetCtx;
 
 		DcmFileFormat format(ctx->ds.get());
 		DcmOutputBufferStream stream(buf, bufSize);
@@ -94,10 +94,10 @@ int saveDcmtkDataSetToMemory(unsigned long errorCtx, unsigned long dataSetCtx, c
 	return 0;
 }
 
-int createDatasetFromMemory(unsigned long errorCtx, unsigned long *rvDataSetCtx, const unsigned char *buf, unsigned int bufSize)
+int createDatasetFromMemory(unsigned long errorCtx, unsigned long *rvDatasetCtx, const unsigned char *buf, unsigned int bufSize)
 {
 	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;
-	DataSetContext *ctx = 0;
+	DatasetContext *ctx = 0;
 	try
 	{
 		DcmInputBufferStream stream;
@@ -108,9 +108,9 @@ int createDatasetFromMemory(unsigned long errorCtx, unsigned long *rvDataSetCtx,
 		if (cond.bad())
 			return errCtx->putError(cond.text());
 
-		ctx = new DataSetContext();
+		ctx = new DatasetContext();
 		ctx->ds.reset(format.getAndRemoveDataset());
-		*rvDataSetCtx = (unsigned long)ctx;
+		*rvDatasetCtx = (unsigned long)ctx;
 	}
 	catch (const std::exception &ex)
 	{
@@ -124,13 +124,13 @@ int createDatasetFromMemory(unsigned long errorCtx, unsigned long *rvDataSetCtx,
 	return 0;
 }
 
-int saveDcmtkDataSet(unsigned long errorCtx, unsigned long dataSetCtx, const char * fileName, int transfer)
+int saveDcmtkDataset(unsigned long errorCtx, unsigned long dataSetCtx, const char * fileName, int transfer)
 {
 	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;
 	(void)errCtx;
 	try
 	{
-		DataSetContext *ctx = (DataSetContext *)dataSetCtx;
+		DatasetContext *ctx = (DatasetContext *)dataSetCtx;
 
 		DcmFileFormat format(ctx->ds.get());
 		OFCondition cond = format.saveFile(fileName, (E_TransferSyntax)transfer);
@@ -142,13 +142,13 @@ int saveDcmtkDataSet(unsigned long errorCtx, unsigned long dataSetCtx, const cha
 	return 0;
 }
 
-int closeDcmtkDataSet(unsigned long errorCtx, unsigned long dataSetCtx)
+int closeDcmtkDataset(unsigned long errorCtx, unsigned long dataSetCtx)
 {
 	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;
 	(void)errCtx;
 	try
 	{
-		DataSetContext *ctx = (DataSetContext *)dataSetCtx;
+		DatasetContext *ctx = (DatasetContext *)dataSetCtx;
 		delete ctx;
 	}
 	CHECK_EXCEPTION

@@ -32,7 +32,7 @@ int getCustomString(unsigned long errorCtx, unsigned long dataSetCtx, unsigned i
 	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;
 	try
 	{
-		DataSetContext *ctx = (DataSetContext *)dataSetCtx;
+		DatasetContext *ctx = (DatasetContext *)dataSetCtx;
 		DcmDataset *ds = ctx->ds.get();
 		OFCondition cond;
 
@@ -74,7 +74,7 @@ int setCustomString(unsigned long errorCtx, unsigned long dataSetCtx, unsigned i
 	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;
 	try
 	{
-		DataSetContext *ctx = (DataSetContext *)dataSetCtx;
+		DatasetContext *ctx = (DatasetContext *)dataSetCtx;
 		DcmDataset *ds = ctx->ds.get();
 		OFCondition cond;
 
