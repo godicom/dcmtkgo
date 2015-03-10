@@ -193,58 +193,114 @@ func (ds *dataset) GetString(tag uint32) (string, error) {
 }
 
 func (ds *dataset) SetString(tag uint32, value string) error {
+	errId := C.setString(ds.errCtx, ds.dsCtx, C.uint(tag), C.CString(value), C.int(len(value)))
+	if errId != 0 {
+		return errors.New(getErrorString(ds.errCtx, errId))
+	}
 	return nil
 }
 
 func (ds *dataset) SetUint8Array(tag uint32, values []uint8) error {
+	errId := C.setUint8Array(ds.errCtx, ds.dsCtx, C.uint(tag), (*C.uchar)(unsafe.Pointer(&values)), C.ulong(len(values)))
+	if errId != 0 {
+		return errors.New(getErrorString(ds.errCtx, errId))
+	}
 	return nil
 }
 
 func (ds *dataset) SetUint16(tag uint32, value uint16) error {
+	errId := C.setUint16(ds.errCtx, ds.dsCtx, C.uint(tag), C.ushort(value))
+	if errId != 0 {
+		return errors.New(getErrorString(ds.errCtx, errId))
+	}
 	return nil
 }
 
 func (ds *dataset) SetUint16Array(tag uint32, values []uint16) error {
+	errId := C.setUint16Array(ds.errCtx, ds.dsCtx, C.uint(tag), (*C.ushort)(unsafe.Pointer(&values)), C.ulong(len(values)))
+	if errId != 0 {
+		return errors.New(getErrorString(ds.errCtx, errId))
+	}
 	return nil
 }
 
 func (ds *dataset) SetInt16(tag uint32, value int16) error {
+	errId := C.setSint16(ds.errCtx, ds.dsCtx, C.uint(tag), C.short(value))
+	if errId != 0 {
+		return errors.New(getErrorString(ds.errCtx, errId))
+	}
 	return nil
 }
 
-func (ds *dataset) SetInt16Array(tag uint32, value []uint16) error {
+func (ds *dataset) SetInt16Array(tag uint32, values []int16) error {
+	errId := C.setSint16Array(ds.errCtx, ds.dsCtx, C.uint(tag), (*C.short)(unsafe.Pointer(&values)), C.ulong(len(values)))
+	if errId != 0 {
+		return errors.New(getErrorString(ds.errCtx, errId))
+	}
 	return nil
 }
 
 func (ds *dataset) SetUint32(tag uint32, value uint32) error {
+	errId := C.setUint32(ds.errCtx, ds.dsCtx, C.uint(tag), C.uint(value))
+	if errId != 0 {
+		return errors.New(getErrorString(ds.errCtx, errId))
+	}
 	return nil
 }
 
-func (ds *dataset) SetUint32Array(tag, uint32, values []uint32) error {
+func (ds *dataset) SetUint32Array(tag uint32, values []uint32) error {
+	errId := C.setUint32Array(ds.errCtx, ds.dsCtx, C.uint(tag), (*C.uint)(unsafe.Pointer(&values)), C.ulong(len(values)))
+	if errId != 0 {
+		return errors.New(getErrorString(ds.errCtx, errId))
+	}
 	return nil
 }
 
 func (ds *dataset) SetInt32(tag uint32, value int32) error {
+	errId := C.setSint32(ds.errCtx, ds.dsCtx, C.uint(tag), C.int(value))
+	if errId != 0 {
+		return errors.New(getErrorString(ds.errCtx, errId))
+	}
 	return nil
 }
 
-func (ds *dataset) SetInt32Array(tag uint32, values []uint32) error {
+func (ds *dataset) SetInt32Array(tag uint32, values []int32) error {
+	errId := C.setSint32Array(ds.errCtx, ds.dsCtx, C.uint(tag), (*C.int)(unsafe.Pointer(&values)), C.ulong(len(values)))
+	if errId != 0 {
+		return errors.New(getErrorString(ds.errCtx, errId))
+	}
 	return nil
 }
 
 func (ds *dataset) SetFloat32(tag uint32, value float32) error {
+	errId := C.setFloat32(ds.errCtx, ds.dsCtx, C.uint(tag), C.float(value))
+	if errId != 0 {
+		return errors.New(getErrorString(ds.errCtx, errId))
+	}
 	return nil
 }
 
-func (ds *dataset) SetFloat32Array(tag uint32, value []float32) error {
+func (ds *dataset) SetFloat32Array(tag uint32, values []float32) error {
+	errId := C.setFloat32Array(ds.errCtx, ds.dsCtx, C.uint(tag), (*C.float)(unsafe.Pointer(&values)), C.ulong(len(values)))
+	if errId != 0 {
+		return errors.New(getErrorString(ds.errCtx, errId))
+	}
 	return nil
 }
 
 func (ds *dataset) SetFloat64(tag uint32, value float64) error {
+	errId := C.setFloat64(ds.errCtx, ds.dsCtx, C.uint(tag), C.double(value))
+	if errId != 0 {
+		return errors.New(getErrorString(ds.errCtx, errId))
+	}
 	return nil
 }
 
-func (ds *dataset) SetFloat64Array(tag uint32, value []float64) error {
+func (ds *dataset) SetFloat64Array(tag uint32, values []float64) error {
+	errId := C.setFloat64Array(ds.errCtx, ds.dsCtx, C.uint(tag), (*C.double)(unsafe.Pointer(&values)), C.ulong(len(values)))
+	if errId != 0 {
+		return errors.New(getErrorString(ds.errCtx, errId))
+	}
 	return nil
 }
 

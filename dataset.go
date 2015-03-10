@@ -35,12 +35,12 @@ type DatasetWriter interface {
 	SetUint16(tag uint32, value uint16) error
 	SetUint16Array(tag uint32, values []uint16) error
 	SetInt16(tag uint32, value int16) error
-	SetInt16Array(tag uint32, value []uint16) error
+	SetInt16Array(tag uint32, value []int16) error
 
 	SetUint32(tag uint32, value uint32) error
-	SetUint32Array(tag, uint32, values []uint32) error
+	SetUint32Array(tag uint32, values []uint32) error
 	SetInt32(tag uint32, value int32) error
-	SetInt32Array(tag uint32, values []uint32) error
+	SetInt32Array(tag uint32, values []int32) error
 
 	SetFloat32(tag uint32, value float32) error
 	SetFloat32Array(tag uint32, value []float32) error
