@@ -3,7 +3,7 @@
 
 #include <memory>
 
-struct DataSetContext
+struct DatasetContext
 {
 	std::unique_ptr<DcmDataset> ds;
 };

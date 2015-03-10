@@ -3,7 +3,7 @@ void closeErrorCtx(unsigned long errorCtx);
 int getError(unsigned long errorCtx, int errorId, char * buf, unsigned long bufSize);
 
 int createEmptyDcmtkDataSet(unsigned long errorCtx, unsigned long *rvDataSetCtx);
-int createDatasetFromMemory(unsigned long errorCtx, unsigned long *rvDataSetCtx, const char * buf, unsigned int bufSize);
+int createDatasetFromMemory(unsigned long errorCtx, unsigned long *rvDataSetCtx, const unsigned char * buf, unsigned int bufSize);
 int openDcmtkDataSet(unsigned long errorCtx, const char * fileName, unsigned long *rvDataSetCtx);
 int saveDcmtkDataSet(unsigned long errorCtx, unsigned long dataSetCtx, const char * fileName, int transfer);
 int saveDcmtkDataSetToMemory(unsigned long errorCtx, unsigned long dataSetCtx, char * buf, unsigned int bufSize, int transfer);

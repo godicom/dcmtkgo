@@ -94,7 +94,7 @@ int saveDcmtkDataSetToMemory(unsigned long errorCtx, unsigned long dataSetCtx, c
 	return 0;
 }
 
-int createDatasetFromMemory(unsigned long errorCtx, unsigned long *rvDataSetCtx, const char * buf, unsigned int bufSize)
+int createDatasetFromMemory(unsigned long errorCtx, unsigned long *rvDataSetCtx, const unsigned char *buf, unsigned int bufSize)
 {
 	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;
 	DataSetContext *ctx = 0;
