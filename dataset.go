@@ -3,6 +3,8 @@ package dcmtkgo
 type Dataset interface {
 	DatasetReader
 	DatasetWriter
+	SaveToFile(filename string) error
+	CloseDataset() error
 }
 
 type DatasetReader interface {
@@ -49,13 +51,15 @@ type DatasetWriter interface {
 }
 
 // Creates Empty data set
-func NewDataset() Dataset {
-	return newDataset()
+func NewEmptyDataset() (Dataset, error) {
+	ds := newDataset()
+	err := ds.CreateEmptyDataset()
+	return ds, err
 }
 
 // Reads dataset from file
 func OpenDataset(filename string) (Dataset, error) {
 	ds := newDataset()
-	err := ds.openDataSet(filename)
+	err := ds.OpenDataSet(filename)
 	return ds, err
 }

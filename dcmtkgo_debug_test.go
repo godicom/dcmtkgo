@@ -19,6 +19,25 @@ import (
 // 	}
 // }
 
+func TestCreateNewDataSet(t *testing.T) {
+	ds, err := NewEmptyDataset()
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = ds.SetString(PatientID, "New Patient name")
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = ds.SaveToFile("/tmp/test.dcm")
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = ds.CloseDataset()
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestDebugArray(t *testing.T) {
 	ds, err := OpenDataset("test_files/IM-0001-0013.dcm")
 	if err != nil {

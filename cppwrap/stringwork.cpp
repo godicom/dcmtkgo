@@ -21,19 +21,19 @@ extern "C"
 #include "dataset.h"
 #include "errctx.h"
 
-enum GetStringMode
+enum StringMode
 {
 	SimpleString,
 	ArrayString
 };
 
-int getCustomString(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, char *buf, int bufSize, GetStringMode mode)
+int getCustomString(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, char *buf, int bufSize, StringMode mode)
 {
 	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;
 	try
 	{
 		DataSetContext *ctx = (DataSetContext *)dataSetCtx;
-		DcmDataset *ds = ctx->ds;
+		DcmDataset *ds = ctx->ds.get();
 		OFCondition cond;
 
 		unsigned short e = g_e & 0xFFFF;
@@ -56,14 +56,7 @@ int getCustomString(unsigned long errorCtx, unsigned long dataSetCtx, unsigned i
 			return errCtx->putError(cond.text());
 		strncpy(buf, str.data(), bufSize);
 	}
-	catch (const std::exception &ex)
-	{
-		return errCtx->putError(ex.what());
-	}
-	catch(...)
-	{
-		return errCtx->putError("unknown exception");
-	}
+	CHECK_EXCEPTION
 	return 0;
 }
 
@@ -76,12 +69,44 @@ int getStringArray(unsigned long errorCtx, unsigned long dataSetCtx, unsigned in
 	return getCustomString(errorCtx, dataSetCtx, g_e, buf, bufSize, ArrayString);
 }
 
-int setStringArray(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, char * buf, int bufSize){
-//	return setArray(errorCtx, dataSetCtx, g_e, bu)
+int setCustomString(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, char *buf, int bufSize, StringMode mode)
+{
+	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;
+	try
+	{
+		DataSetContext *ctx = (DataSetContext *)dataSetCtx;
+		DcmDataset *ds = ctx->ds.get();
+		OFCondition cond;
+
+		unsigned short e = g_e & 0xFFFF;
+		unsigned short g = (g_e & 0xFFFF0000) >> 16;
+
+		if (mode == SimpleString)
+		{
+			cond = ds->putAndInsertString(DcmTagKey(g, e), buf);
+		}
+		else if (mode == ArrayString)
+		{
+			OFString str;
+			str.assign(buf, bufSize);
+			cond = ds->findAndGetOFStringArray(DcmTagKey(g, e), str);
+		}
+		else
+		{
+			assert(false);
+		}
+		if (cond.bad())
+			return errCtx->putError(cond.text());
+	}
+	CHECK_EXCEPTION
 	return 0;
+}
+
+int setStringArray(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, char * buf, int bufSize){
+	return setCustomString(errorCtx, dataSetCtx, g_e, buf, bufSize, ArrayString);
 }
 
 int setString(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, char * buf, int bufSize)
 {
-	return 0;
+	return setCustomString(errorCtx, dataSetCtx, g_e, buf, bufSize, SimpleString);
 }

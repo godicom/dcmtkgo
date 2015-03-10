@@ -71,24 +71,16 @@ int getValue(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e,
 	try
 	{
 		DataSetContext *ctx = (DataSetContext *)dataSetCtx;
-		DcmDataset *ds = ctx->ds;
 		OFCondition cond;
 
 		unsigned short e = g_e & 0xFFFF;
 		unsigned short g = (g_e & 0xFFFF0000) >> 16;
 
-		GetCallSwither<T>(ds, DcmTagKey(g, e), *rvValue, cond);
+		GetCallSwither<T>(ctx->ds.get(), DcmTagKey(g, e), *rvValue, cond);
 		if (cond.bad())
 			return errCtx->putError(cond.text());
 	}
-	catch (const std::exception &ex)
-	{
-		return errCtx->putError(ex.what());
-	}
-	catch (...)
-	{
-		return errCtx->putError("unknown exception");
-	}
+	CHECK_EXCEPTION
 	return 0;
 }
 

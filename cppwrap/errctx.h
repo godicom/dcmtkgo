@@ -16,4 +16,15 @@ private:
 	std::map<int, std::string> m_errors;
 };
 
+#define CHECK_EXCEPTION \
+	catch (const std::exception &ex) \
+	{ \
+		return errCtx->putError(ex.what()); \
+	} \
+	catch(...) \
+	{ \
+		return errCtx->putError("unknown exception"); \
+	}
+
+
 #endif // ERRCTX_H

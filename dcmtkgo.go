@@ -27,7 +27,7 @@ type dataset struct {
 	dsCtx  C.ulong
 }
 
-func (ds *dataset) openDataSet(filename string) error {
+func (ds *dataset) OpenDataSet(filename string) error {
 	errId := C.makeGetErrorCtx(&ds.errCtx)
 	if errId != 0 {
 		return errors.New("Can't create Error ctx")
@@ -38,6 +38,50 @@ func (ds *dataset) openDataSet(filename string) error {
 	}
 	return nil
 }
+
+func (ds *dataset) CloseDataset() error {
+	if ds.errCtx == 0 {
+		defer C.closeErrorCtx(ds.errCtx) // TODO: what to do if it fail?
+	}
+	if ds.dsCtx != 0 {
+		var errId C.int = C.closeDcmtkDataSet(ds.errCtx, ds.dsCtx)
+
+		if errId != 0 {
+			return errors.New(getErrorString(ds.errCtx, errId))
+		}
+	}
+	return nil
+}
+
+func (ds *dataset) CreateEmptyDataset() error {
+	errId := C.makeGetErrorCtx(&ds.errCtx)
+	if errId != 0 {
+		return errors.New("Can't create Error ctx")
+	}
+	errId = C.createEmptyDcmtkDataSet(ds.errCtx, &ds.dsCtx)
+	if errId != 0 {
+		return errors.New(getErrorString(ds.errCtx, errId))
+	}
+	return nil
+}
+
+func (ds *dataset) SaveToFile(filename string) error {
+	var errId C.int = C.saveDcmtkDataSet(ds.errCtx, ds.dsCtx, C.CString(filename))
+	if errId != 0 {
+		return errors.New(getErrorString(ds.errCtx, errId))
+	}
+	return nil
+}
+
+func newDataset() *dataset {
+	ds := &dataset{
+		errCtx: 0,
+		dsCtx:  0}
+	runtime.SetFinalizer(ds, (*dataset).CloseDataset)
+	return ds
+}
+
+//----------------------------------------------------------------
 
 func (ds *dataset) GetInt32(tag uint32) (int32, error) {
 	var value C.int
@@ -302,26 +346,4 @@ func (ds *dataset) SetFloat64Array(tag uint32, values []float64) error {
 		return errors.New(getErrorString(ds.errCtx, errId))
 	}
 	return nil
-}
-
-func (ds *dataset) CloseDataset() error {
-	if ds.errCtx == 0 {
-		defer C.closeErrorCtx(ds.errCtx) // TODO: what to do if it fail?
-	}
-	if ds.dsCtx != 0 {
-		var errId C.int = C.closeDcmtkDataSet(ds.errCtx, ds.dsCtx)
-
-		if errId != 0 {
-			return errors.New(getErrorString(ds.errCtx, errId))
-		}
-	}
-	return nil
-}
-
-func newDataset() *dataset {
-	ds := &dataset{
-		errCtx: 0,
-		dsCtx:  0}
-	runtime.SetFinalizer(ds, (*dataset).CloseDataset)
-	return ds
 }

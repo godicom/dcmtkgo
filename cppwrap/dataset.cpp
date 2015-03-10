@@ -18,6 +18,29 @@ extern "C"
 #include "dataset.h"
 #include "errctx.h"
 
+int createEmptyDcmtkDataSet(unsigned long errorCtx, unsigned long *rvDataSetCtx)
+{
+	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;
+	DataSetContext *ctx = 0;
+	try
+	{
+		ctx = new DataSetContext();
+		ctx->ds.reset(new DcmDataset());
+		*rvDataSetCtx = (unsigned long)ctx;
+
+	}
+	catch (const std::exception &ex)
+	{
+		if (ctx) delete ctx;
+		return errCtx->putError(ex.what());
+	}
+	catch(...)
+	{
+		return errCtx->putError("unknown exception");
+	}
+	return 0;
+
+}
 
 int openDcmtkDataSet(unsigned long errorCtx, const char *fileName, unsigned long *rvDataSetCtx)
 {
@@ -31,7 +54,7 @@ int openDcmtkDataSet(unsigned long errorCtx, const char *fileName, unsigned long
 		if (cond.bad())
 			return errCtx->putError(cond.text());
 
-		ctx->ds = ctx->dsFile.getDataset();
+		ctx->ds.reset(ctx->dsFile.getAndRemoveDataset());
 		*rvDataSetCtx = (unsigned long)ctx;
 
 	}
@@ -47,24 +70,36 @@ int openDcmtkDataSet(unsigned long errorCtx, const char *fileName, unsigned long
 	return 0;
 }
 
+int saveDcmtkDataSet(unsigned long errorCtx, unsigned long dataSetCtx, const char * fileName)
+{
+	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;
+	(void)errCtx;
+	try
+	{
+		DataSetContext *ctx = (DataSetContext *)dataSetCtx;
+		ctx->ds->transferInit();
+		DcmFileFormat f(ctx->ds.get());
+
+//		DcmDataset * ds;
+//		ds->saveFile()
+		OFCondition cond = f.saveFile(fileName);
+		if (cond.bad())
+			return errCtx->putError(cond.text());
+		ctx->ds->transferEnd();
+	}
+	CHECK_EXCEPTION
+	return 0;
+}
+
 int closeDcmtkDataSet(unsigned long errorCtx, unsigned long dataSetCtx)
 {
-	std::cout << "begin close dataset from lib\n";
 	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;
+	(void)errCtx;
 	try
 	{
 		DataSetContext *ctx = (DataSetContext *)dataSetCtx;
 		delete ctx;
 	}
-	catch (const std::exception &ex)
-	{
-		return errCtx->putError(ex.what());
-	}
-	catch(...)
-	{
-		return errCtx->putError("unknown exception");
-	}
-	std::cout << "end close dataset from lib\n";
-	std::cout.flush();
+	CHECK_EXCEPTION
 	return 0;
 }
