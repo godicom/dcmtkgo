@@ -28,7 +28,7 @@ func TestCreateNewDataSet(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	err = ds.SaveToFile("/tmp/test.dcm")
+	err = ds.SaveToFile("/tmp/test.dcm", ExsLittleEndianExplicit)
 	if err != nil {
 		t.Fatal(err)
 	}

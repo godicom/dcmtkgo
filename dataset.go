@@ -3,7 +3,7 @@ package dcmtkgo
 type Dataset interface {
 	DatasetReader
 	DatasetWriter
-	SaveToFile(filename string) error
+	SaveToFile(filename string, transfer int32) error
 	CloseDataset() error
 }
 

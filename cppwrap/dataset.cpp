@@ -56,7 +56,6 @@ int openDcmtkDataSet(unsigned long errorCtx, const char *fileName, unsigned long
 
 		ctx->ds.reset(ctx->dsFile.getAndRemoveDataset());
 		*rvDataSetCtx = (unsigned long)ctx;
-
 	}
 	catch (const std::exception &ex)
 	{
@@ -70,7 +69,7 @@ int openDcmtkDataSet(unsigned long errorCtx, const char *fileName, unsigned long
 	return 0;
 }
 
-int saveDcmtkDataSet(unsigned long errorCtx, unsigned long dataSetCtx, const char * fileName)
+int saveDcmtkDataSet(unsigned long errorCtx, unsigned long dataSetCtx, const char * fileName, int transfer)
 {
 	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;
 	(void)errCtx;
@@ -79,10 +78,7 @@ int saveDcmtkDataSet(unsigned long errorCtx, unsigned long dataSetCtx, const cha
 		DataSetContext *ctx = (DataSetContext *)dataSetCtx;
 		ctx->ds->transferInit();
 		DcmFileFormat f(ctx->ds.get());
-
-//		DcmDataset * ds;
-//		ds->saveFile()
-		OFCondition cond = f.saveFile(fileName);
+		OFCondition cond = f.saveFile(fileName, (E_TransferSyntax)transfer);
 		if (cond.bad())
 			return errCtx->putError(cond.text());
 		ctx->ds->transferEnd();
