@@ -6,7 +6,7 @@ int createEmptyDcmtkDataset(unsigned long errorCtx, unsigned long *rvDatasetCtx)
 int createDatasetFromMemory(unsigned long errorCtx, unsigned long *rvDatasetCtx, const unsigned char * buf, unsigned int bufSize);
 int openDcmtkDataset(unsigned long errorCtx, const char * fileName, unsigned long *rvDatasetCtx);
 int saveDcmtkDataset(unsigned long errorCtx, unsigned long dataSetCtx, const char * fileName, int transfer);
-int saveDcmtkDatasetToMemory(unsigned long errorCtx, unsigned long dataSetCtx, char * buf, unsigned int bufSize, int transfer);
+int saveDcmtkDatasetToMemory(unsigned long errorCtx, unsigned long dataSetCtx, unsigned char * buf, unsigned int bufSize, int transfer);
 int closeDcmtkDataset(unsigned long errorCtx, unsigned long dataSetCtx);
 
 int getString(unsigned long errorCtx, unsigned long dataSetCtx, unsigned int g_e, char * buf, int bufSize);

@@ -4,6 +4,7 @@ type Dataset interface {
 	DatasetReader
 	DatasetWriter
 	SaveToFile(filename string, transfer int32) error
+	SaveDatasetToMemory(buf []uint8, transfer int32) error
 	CloseDataset() error
 }
 
@@ -53,13 +54,19 @@ type DatasetWriter interface {
 // Creates Empty data set
 func NewEmptyDataset() (Dataset, error) {
 	ds := newDataset()
-	err := ds.CreateEmptyDataset()
+	err := ds.createEmptyDataset()
+	return ds, err
+}
+
+func LoadFromMemory(buf []uint8) (Dataset, error) {
+	ds := newDataset()
+	err := ds.loadFromMemory(buf)
 	return ds, err
 }
 
 // Reads dataset from file
 func OpenDataset(filename string) (Dataset, error) {
 	ds := newDataset()
-	err := ds.OpenDataSet(filename)
+	err := ds.openDataset(filename)
 	return ds, err
 }

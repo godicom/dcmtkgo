@@ -72,7 +72,7 @@ int openDcmtkDataset(unsigned long errorCtx, const char *fileName, unsigned long
 	return 0;
 }
 
-int saveDcmtkDatasetToMemory(unsigned long errorCtx, unsigned long dataSetCtx, char * buf, unsigned int bufSize, int transfer)
+int saveDcmtkDatasetToMemory(unsigned long errorCtx, unsigned long dataSetCtx, unsigned char *buf, unsigned int bufSize, int transfer)
 {
 	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;
 	(void)errCtx;
@@ -88,7 +88,6 @@ int saveDcmtkDatasetToMemory(unsigned long errorCtx, unsigned long dataSetCtx, c
 			return errCtx->putError(cond.text());
 
 		stream.flush();
-
 	}
 	CHECK_EXCEPTION
 	return 0;

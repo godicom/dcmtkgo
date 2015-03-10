@@ -27,12 +27,34 @@ type dataset struct {
 	dsCtx  C.ulong
 }
 
-func (ds *dataset) OpenDataSet(filename string) error {
+func (ds *dataset) loadFromMemory(buf []uint8) error {
 	errId := C.makeGetErrorCtx(&ds.errCtx)
 	if errId != 0 {
 		return errors.New("Can't create Error ctx")
 	}
-	errId = C.openDcmtkDataSet(ds.errCtx, C.CString(filename), &ds.dsCtx)
+
+	errId = C.createDatasetFromMemory(ds.errCtx, &ds.dsCtx, (*C.uchar)(unsafe.Pointer(&buf)), C.uint(len(buf)))
+	if errId != 0 {
+		return errors.New("Can't create Error ctx")
+	}
+
+	return nil
+}
+
+func (ds *dataset) SaveDatasetToMemory(buf []uint8, transfer int32) error {
+	errId := C.saveDcmtkDatasetToMemory(ds.errCtx, ds.dsCtx, (*C.uchar)(unsafe.Pointer(&buf)), C.uint(len(buf)), C.int(transfer))
+	if errId != 0 {
+		return errors.New(getErrorString(ds.errCtx, errId))
+	}
+	return nil
+}
+
+func (ds *dataset) openDataset(filename string) error {
+	errId := C.makeGetErrorCtx(&ds.errCtx)
+	if errId != 0 {
+		return errors.New("Can't create Error ctx")
+	}
+	errId = C.openDcmtkDataset(ds.errCtx, C.CString(filename), &ds.dsCtx)
 	if errId != 0 {
 		return errors.New(getErrorString(ds.errCtx, errId))
 	}
@@ -44,7 +66,7 @@ func (ds *dataset) CloseDataset() error {
 		defer C.closeErrorCtx(ds.errCtx) // TODO: what to do if it fail?
 	}
 	if ds.dsCtx != 0 {
-		var errId C.int = C.closeDcmtkDataSet(ds.errCtx, ds.dsCtx)
+		var errId C.int = C.closeDcmtkDataset(ds.errCtx, ds.dsCtx)
 
 		if errId != 0 {
 			return errors.New(getErrorString(ds.errCtx, errId))
@@ -53,12 +75,12 @@ func (ds *dataset) CloseDataset() error {
 	return nil
 }
 
-func (ds *dataset) CreateEmptyDataset() error {
+func (ds *dataset) createEmptyDataset() error {
 	errId := C.makeGetErrorCtx(&ds.errCtx)
 	if errId != 0 {
 		return errors.New("Can't create Error ctx")
 	}
-	errId = C.createEmptyDcmtkDataSet(ds.errCtx, &ds.dsCtx)
+	errId = C.createEmptyDcmtkDataset(ds.errCtx, &ds.dsCtx)
 	if errId != 0 {
 		return errors.New(getErrorString(ds.errCtx, errId))
 	}
@@ -66,7 +88,7 @@ func (ds *dataset) CreateEmptyDataset() error {
 }
 
 func (ds *dataset) SaveToFile(filename string, transfer int32) error {
-	var errId C.int = C.saveDcmtkDataSet(ds.errCtx, ds.dsCtx, C.CString(filename), C.int(transfer))
+	var errId C.int = C.saveDcmtkDataset(ds.errCtx, ds.dsCtx, C.CString(filename), C.int(transfer))
 	if errId != 0 {
 		return errors.New(getErrorString(ds.errCtx, errId))
 	}
