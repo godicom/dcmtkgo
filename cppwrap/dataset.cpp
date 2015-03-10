@@ -10,8 +10,14 @@
 #include <dcmtk/ofstd/ofcond.h>
 #include <exception>
 
+extern "C"
+{
+#include "export.h"
+}
+
 #include "dataset.h"
 #include "errctx.h"
+
 
 int openDcmtkDataSet(unsigned long errorCtx, const char *fileName, unsigned long *rvDataSetCtx)
 {

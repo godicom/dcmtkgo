@@ -1,6 +1,11 @@
 #include <iostream>
 #include "errctx.h"
 
+extern "C"
+{
+#include "export.h"
+}
+
 int getError(unsigned long errorCtx, int errorId, char *buf, unsigned long bufSize)
 {
 	try
