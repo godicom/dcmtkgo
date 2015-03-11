@@ -10,6 +10,7 @@
 #include <dcmtk/ofstd/ofcond.h>
 #include <dcmtk/dcmdata/dcistrmb.h>
 #include <dcmtk/dcmdata/dcostrmb.h>
+#include <dcmtk/dcmdata/dcerror.h>
 
 #include <exception>
 
@@ -72,65 +73,74 @@ int openDcmtkDataset(unsigned long errorCtx, const char *fileName, unsigned long
 	return 0;
 }
 
-int saveDcmtkDatasetToMemory(unsigned long errorCtx, unsigned long dataSetCtx, unsigned char *buf, unsigned int bufSize, int transfer)
+int saveDcmtkDatasetToMemory(unsigned long errorCtx, unsigned long dataSetCtx,
+							 unsigned char *buf,
+							 unsigned int bufSize,
+							 unsigned long int * writtenLength,
+							 int transfer)
 {
 	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;
 	(void)errCtx;
 	try
 	{
 		DatasetContext *ctx = (DatasetContext *)dataSetCtx;
+		DcmDataset & ds = *ctx->ds.get();
 
-		DcmFileFormat format(ctx->ds.get());
+
 		DcmOutputBufferStream stream(buf, bufSize);
 		std::cout << "before write call\n";
 		std::cout.flush();
 
-		OFCondition cond = format.write(stream, (E_TransferSyntax)transfer,
-										EET_ExplicitLength,
-										0,
-										EGL_withGL,
-										EPD_withoutPadding);
-		std::cout << "after write call\n";
-		stream.flush();
-		std::cout << "after flush\n";
+		OFCondition cond = ds.write(stream, (E_TransferSyntax)transfer,
+									EET_ExplicitLength, 0, EGL_withGL,
+									EPD_withoutPadding);
 
-		std::cout.flush();
+		std::cout << "after write call\n";
 		if (cond.bad())
 			return errCtx->putError(cond.text());
-
-		//stream.flush();
+		stream.flush();
+		*writtenLength = stream.tell();
+		std::cout << "after flush\n";
+		std::cout.flush();
 	}
 	CHECK_EXCEPTION
 	return 0;
 }
 
-int createDatasetFromMemory(unsigned long errorCtx, unsigned long *rvDatasetCtx, const unsigned char *buf, unsigned int bufSize)
+int createDatasetFromMemory(unsigned long errorCtx, unsigned long *rvDatasetCtx, const unsigned char *buf, unsigned int bufSize, int transfer)
 {
 	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;
 	DatasetContext *ctx = 0;
+	DcmDataset * ds = 0;
 	try
 	{
 		DcmInputBufferStream stream;
 		stream.setBuffer(buf, bufSize);
-		DcmFileFormat format;
-
-		OFCondition cond = format.read(stream);
+		stream.setEos();
+		ds = new DcmDataset();
+		ds->transferInit();
+		OFCondition cond = ds->read(stream, (E_TransferSyntax)transfer, EGL_withGL, bufSize);
+		ds->transferEnd();
 		if (cond.bad())
 			return errCtx->putError(cond.text());
 
 		ctx = new DatasetContext();
-		ctx->ds.reset(format.getAndRemoveDataset());
+		ctx->ds.reset(ds);
 		*rvDatasetCtx = (unsigned long)ctx;
 	}
 	catch (const std::exception &ex)
 	{
+		if (ds) delete ds;
 		if (ctx) delete ctx;
 		return errCtx->putError(ex.what());
 	}
 	catch(...)
 	{
+		if (ds) delete ds;
+		if (ctx) delete ctx;
 		return errCtx->putError("unknown exception");
 	}
+
 	return 0;
 }
 

@@ -27,13 +27,13 @@ type dataset struct {
 	dsCtx  C.ulong
 }
 
-func (ds *dataset) loadFromMemory(buf []uint8) error {
+func (ds *dataset) loadFromMemory(buf []uint8, transfer int32) error {
 	errId := C.makeGetErrorCtx(&ds.errCtx)
 	if errId != 0 {
 		return errors.New("Can't create Error ctx")
 	}
 
-	errId = C.createDatasetFromMemory(ds.errCtx, &ds.dsCtx, (*C.uchar)(unsafe.Pointer(&buf[0])), C.uint(len(buf)))
+	errId = C.createDatasetFromMemory(ds.errCtx, &ds.dsCtx, (*C.uchar)(unsafe.Pointer(&buf[0])), C.uint(len(buf)), C.int(transfer))
 	if errId != 0 {
 		return errors.New(getErrorString(ds.errCtx, errId))
 	}
@@ -41,13 +41,14 @@ func (ds *dataset) loadFromMemory(buf []uint8) error {
 	return nil
 }
 
-func (ds *dataset) SaveDatasetToMemory(buf []uint8, transfer int32) error {
-	errId := C.saveDcmtkDatasetToMemory(ds.errCtx, ds.dsCtx, (*C.uchar)(unsafe.Pointer(&buf[0])), C.uint(len(buf)), C.int(transfer))
+func (ds *dataset) SaveDatasetToMemory(buf []uint8, transfer int32) (uint64, error) {
+	var writtenLen C.ulong = 0
+	errId := C.saveDcmtkDatasetToMemory(ds.errCtx, ds.dsCtx, (*C.uchar)(unsafe.Pointer(&buf[0])), C.uint(len(buf)), &writtenLen, C.int(transfer))
 	if errId != 0 {
-		return errors.New(getErrorString(ds.errCtx, errId))
+		return 0, errors.New(getErrorString(ds.errCtx, errId))
 	}
 
-	return nil
+	return uint64(writtenLen), nil
 }
 
 func (ds *dataset) openDataset(filename string) error {
@@ -268,7 +269,7 @@ func (ds *dataset) SetString(tag uint32, value string) error {
 }
 
 func (ds *dataset) SetUint8Array(tag uint32, values []uint8) error {
-	errId := C.setUint8Array(ds.errCtx, ds.dsCtx, C.uint(tag), (*C.uchar)(unsafe.Pointer(&values)), C.ulong(len(values)))
+	errId := C.setUint8Array(ds.errCtx, ds.dsCtx, C.uint(tag), (*C.uchar)(&values[0]), C.ulong(len(values)))
 	if errId != 0 {
 		return errors.New(getErrorString(ds.errCtx, errId))
 	}
@@ -284,7 +285,7 @@ func (ds *dataset) SetUint16(tag uint32, value uint16) error {
 }
 
 func (ds *dataset) SetUint16Array(tag uint32, values []uint16) error {
-	errId := C.setUint16Array(ds.errCtx, ds.dsCtx, C.uint(tag), (*C.ushort)(unsafe.Pointer(&values)), C.ulong(len(values)))
+	errId := C.setUint16Array(ds.errCtx, ds.dsCtx, C.uint(tag), (*C.ushort)(&values[0]), C.ulong(len(values)))
 	if errId != 0 {
 		return errors.New(getErrorString(ds.errCtx, errId))
 	}
@@ -300,7 +301,7 @@ func (ds *dataset) SetInt16(tag uint32, value int16) error {
 }
 
 func (ds *dataset) SetInt16Array(tag uint32, values []int16) error {
-	errId := C.setSint16Array(ds.errCtx, ds.dsCtx, C.uint(tag), (*C.short)(unsafe.Pointer(&values)), C.ulong(len(values)))
+	errId := C.setSint16Array(ds.errCtx, ds.dsCtx, C.uint(tag), (*C.short)(&values[0]), C.ulong(len(values)))
 	if errId != 0 {
 		return errors.New(getErrorString(ds.errCtx, errId))
 	}
@@ -316,7 +317,7 @@ func (ds *dataset) SetUint32(tag uint32, value uint32) error {
 }
 
 func (ds *dataset) SetUint32Array(tag uint32, values []uint32) error {
-	errId := C.setUint32Array(ds.errCtx, ds.dsCtx, C.uint(tag), (*C.uint)(unsafe.Pointer(&values)), C.ulong(len(values)))
+	errId := C.setUint32Array(ds.errCtx, ds.dsCtx, C.uint(tag), (*C.uint)(&values[0]), C.ulong(len(values)))
 	if errId != 0 {
 		return errors.New(getErrorString(ds.errCtx, errId))
 	}
@@ -332,7 +333,7 @@ func (ds *dataset) SetInt32(tag uint32, value int32) error {
 }
 
 func (ds *dataset) SetInt32Array(tag uint32, values []int32) error {
-	errId := C.setSint32Array(ds.errCtx, ds.dsCtx, C.uint(tag), (*C.int)(unsafe.Pointer(&values)), C.ulong(len(values)))
+	errId := C.setSint32Array(ds.errCtx, ds.dsCtx, C.uint(tag), (*C.int)(&values[0]), C.ulong(len(values)))
 	if errId != 0 {
 		return errors.New(getErrorString(ds.errCtx, errId))
 	}
@@ -348,7 +349,7 @@ func (ds *dataset) SetFloat32(tag uint32, value float32) error {
 }
 
 func (ds *dataset) SetFloat32Array(tag uint32, values []float32) error {
-	errId := C.setFloat32Array(ds.errCtx, ds.dsCtx, C.uint(tag), (*C.float)(unsafe.Pointer(&values)), C.ulong(len(values)))
+	errId := C.setFloat32Array(ds.errCtx, ds.dsCtx, C.uint(tag), (*C.float)(&values[0]), C.ulong(len(values)))
 	if errId != 0 {
 		return errors.New(getErrorString(ds.errCtx, errId))
 	}
@@ -364,7 +365,7 @@ func (ds *dataset) SetFloat64(tag uint32, value float64) error {
 }
 
 func (ds *dataset) SetFloat64Array(tag uint32, values []float64) error {
-	errId := C.setFloat64Array(ds.errCtx, ds.dsCtx, C.uint(tag), (*C.double)(unsafe.Pointer(&values)), C.ulong(len(values)))
+	errId := C.setFloat64Array(ds.errCtx, ds.dsCtx, C.uint(tag), (*C.double)(&values[0]), C.ulong(len(values)))
 	if errId != 0 {
 		return errors.New(getErrorString(ds.errCtx, errId))
 	}

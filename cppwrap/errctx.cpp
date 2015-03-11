@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string.h>
 #include "errctx.h"
 
 extern "C"

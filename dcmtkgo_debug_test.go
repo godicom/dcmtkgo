@@ -32,12 +32,12 @@ func TestSaveLoadMemory(t *testing.T) {
 
 	s := make([]uint8, 4000, 4000)
 
-	err = ds.SaveDatasetToMemory(s, ExsLittleEndianImplicit)
+	writtenLen, err := ds.SaveDatasetToMemory(s, ExsLittleEndianImplicit)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	ds2, err2 := LoadFromMemory(s)
+	ds2, err2 := LoadFromMemory(s[0: writtenLen], ExsLittleEndianImplicit)
 	if err2 != nil {
 		t.Fatal(err2)
 	}
