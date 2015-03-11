@@ -88,20 +88,16 @@ int saveDcmtkDatasetToMemory(unsigned long errorCtx, unsigned long dataSetCtx,
 
 
 		DcmOutputBufferStream stream(buf, bufSize);
-		std::cout << "before write call\n";
-		std::cout.flush();
+
 
 		OFCondition cond = ds.write(stream, (E_TransferSyntax)transfer,
 									EET_ExplicitLength, 0, EGL_withGL,
 									EPD_withoutPadding);
 
-		std::cout << "after write call\n";
 		if (cond.bad())
 			return errCtx->putError(cond.text());
 		stream.flush();
 		*writtenLength = stream.tell();
-		std::cout << "after flush\n";
-		std::cout.flush();
 	}
 	CHECK_EXCEPTION
 	return 0;
