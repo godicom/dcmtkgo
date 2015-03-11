@@ -33,19 +33,20 @@ func (ds *dataset) loadFromMemory(buf []uint8) error {
 		return errors.New("Can't create Error ctx")
 	}
 
-	errId = C.createDatasetFromMemory(ds.errCtx, &ds.dsCtx, (*C.uchar)(unsafe.Pointer(&buf)), C.uint(len(buf)))
+	errId = C.createDatasetFromMemory(ds.errCtx, &ds.dsCtx, (*C.uchar)(unsafe.Pointer(&buf[0])), C.uint(len(buf)))
 	if errId != 0 {
-		return errors.New("Can't create Error ctx")
+		return errors.New(getErrorString(ds.errCtx, errId))
 	}
 
 	return nil
 }
 
 func (ds *dataset) SaveDatasetToMemory(buf []uint8, transfer int32) error {
-	errId := C.saveDcmtkDatasetToMemory(ds.errCtx, ds.dsCtx, (*C.uchar)(unsafe.Pointer(&buf)), C.uint(len(buf)), C.int(transfer))
+	errId := C.saveDcmtkDatasetToMemory(ds.errCtx, ds.dsCtx, (*C.uchar)(unsafe.Pointer(&buf[0])), C.uint(len(buf)), C.int(transfer))
 	if errId != 0 {
 		return errors.New(getErrorString(ds.errCtx, errId))
 	}
+
 	return nil
 }
 

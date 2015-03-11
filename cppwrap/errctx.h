@@ -7,6 +7,7 @@
 class ErrorCtx
 {
 public:
+	ErrorCtx();
 
 	std::string errorTextDesc(int errorId);
 

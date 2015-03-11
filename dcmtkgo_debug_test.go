@@ -18,6 +18,39 @@ import (
 // 		runtime.GC()
 // 	}
 // }
+func TestSaveLoadMemory(t *testing.T) {
+	ds, err := NewEmptyDataset()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	patient := "New Patient name"
+	err = ds.SetString(PatientID, patient)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	s := make([]uint8, 4000, 4000)
+
+	err = ds.SaveDatasetToMemory(s, ExsLittleEndianImplicit)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ds2, err2 := LoadFromMemory(s)
+	if err2 != nil {
+		t.Fatal(err2)
+	}
+
+	patient2, err := ds2.GetString(PatientID)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if patient2 != patient {
+		t.Errorf("Different values expect %s got %s", patient, patient2)
+	}
+}
 
 func TestCreateNewDataSet(t *testing.T) {
 	ds, err := NewEmptyDataset()

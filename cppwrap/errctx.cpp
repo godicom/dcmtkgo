@@ -46,6 +46,11 @@ int makeGetErrorCtx(unsigned long *errorCtx)
 	return 1;
 }
 
+ErrorCtx::ErrorCtx()
+	: m_errorId(0)
+{
+}
+
 std::string ErrorCtx::errorTextDesc(int errorId)
 {
 	std::string buf;
