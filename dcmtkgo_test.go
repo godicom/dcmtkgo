@@ -1,6 +1,6 @@
 package dcmtkgo
 
-// Rral tests
+// Real tests
 import (
 	"testing"
 )
@@ -31,24 +31,95 @@ func TestGetString(t *testing.T) {
 	}
 }
 
-func TestSaveLoadMemory(t *testing.T) {
+func compareValues(err error, expect interface{}, got interface{}, t *testing.T) {
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got != expect {
+		t.Fatal("got != expect")
+	}
+}
+
+func loadValueFromDataset(ds Dataset, tag uint32, val interface{}, t *testing.T) {
+	var err error
+	var got interface{}
+	switch v := val.(type) {
+	case uint8:
+		//err = ds.setUint8????
+	case uint16:
+		got, err = ds.GetUint16(tag)
+		compareValues(err, v, got, t)
+	case int16:
+		got, err = ds.GetInt16(tag)
+		compareValues(err, v, got, t)
+	case float32:
+		got, err = ds.GetFloat32(tag)
+		compareValues(err, v, got, t)
+	case float64:
+		got, err = ds.GetFloat64(tag)
+		compareValues(err, v, got, t)
+	case string:
+		got, err = ds.GetString(tag)
+		compareValues(err, v, got, t)
+	case uint32:
+		got, err = ds.GetUint32(tag)
+		compareValues(err, v, got, t)
+	case int32:
+		got, err = ds.GetInt32(tag)
+		compareValues(err, v, got, t)
+	default:
+		t.Fatal("unknown")
+	}
+	if err != nil {
+		t.Fatal(err)
+	}
+
+}
+
+func saveValueToDataset(ds Dataset, tag uint32, val interface{}, t *testing.T) {
+	var err error
+	switch v := val.(type) {
+	case string:
+		err = ds.SetString(tag, v)
+	case uint8:
+		//err = ds.setUint8????
+	case uint16:
+		err = ds.SetUint16(tag, v)
+	case int16:
+		err = ds.SetInt16(tag, v)
+	case uint32:
+		err = ds.SetUint32(tag, v)
+	case int32:
+		err = ds.SetInt32(tag, v)
+	case float32:
+		err = ds.SetFloat32(tag, v)
+	case float64:
+		err = ds.SetFloat64(tag, v)
+	default:
+		t.Fatal("unknown")
+	}
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestSomeTypes(t *testing.T) {
 	ds, err := NewEmptyDataset()
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	cases := []struct {
-		tag uint32
-		val string
+		tag  uint32
+		want interface{}
 	}{
 		{PatientName, "Test^S R"},
 		{SOPInstanceUID, "1.2.276.0.7230010.3.1.4.2139363186.7819.982086466.4"},
+		//{SOPInstanceUID, uint32(1234)},
 	}
 
 	for _, c := range cases {
-		err := ds.SetString(c.tag, c.val)
-		if err != nil {
-			t.Error(err)
-		}
+		saveValueToDataset(ds, c.tag, c.want, t)
 	}
 
 	s := make([]uint8, 4000, 4000)
@@ -63,12 +134,7 @@ func TestSaveLoadMemory(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got, err := ds2.GetString(c.tag)
-		if err != nil {
-			t.Error(err)
-		}
-		if got != c.val {
-			t.Errorf("Different values expect %s got %s", c.val, got)
-		}
+		loadValueFromDataset(ds2, c.tag, c.want, t)
 	}
+
 }
