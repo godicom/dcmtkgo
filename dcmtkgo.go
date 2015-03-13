@@ -89,6 +89,14 @@ func (ds *dataset) createEmptyDataset() error {
 	return nil
 }
 
+func (ds *dataset) DumpDatasetToStdOut() error {
+	var errId C.int = C.dumpDatasetToStdOut(ds.errCtx, ds.dsCtx)
+	if errId != 0 {
+		return errors.New(getErrorString(ds.errCtx, errId))
+	}
+	return nil
+}
+
 func (ds *dataset) SaveToFile(filename string, transfer int32) error {
 	var errId C.int = C.saveDcmtkDataset(ds.errCtx, ds.dsCtx, C.CString(filename), C.int(transfer))
 	if errId != 0 {

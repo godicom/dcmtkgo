@@ -22,6 +22,36 @@ extern "C"
 #include "dataset.h"
 #include "errctx.h"
 
+
+int getDatasetSize(unsigned long errorCtx, unsigned long dataSetCtx, unsigned long * rvSize)
+{
+	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;
+	(void)errCtx;
+	try
+	{
+		DatasetContext *ctx = (DatasetContext *)dataSetCtx;
+		DcmDataset & ds = *ctx->ds.get();
+		assert(false);
+		*rvSize = 0;
+	}
+	CHECK_EXCEPTION
+	return 0;
+}
+
+int dumpDatasetToStdOut(unsigned long errorCtx, unsigned long dataSetCtx)
+{
+	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;
+	(void)errCtx;
+	try
+	{
+		DatasetContext *ctx = (DatasetContext *)dataSetCtx;
+		DcmDataset & ds = *ctx->ds.get();
+		ds.print(std::cout);
+	}
+	CHECK_EXCEPTION
+	return 0;
+}
+
 int createEmptyDcmtkDataset(unsigned long errorCtx, unsigned long *rvDatasetCtx)
 {
 	ErrorCtx *errCtx = (ErrorCtx *)errorCtx;

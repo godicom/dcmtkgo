@@ -6,6 +6,7 @@ type Dataset interface {
 	SaveToFile(filename string, transfer int32) error
 	SaveDatasetToMemory(buf []uint8, transfer int32) (uint64, error)
 	CloseDataset() error
+	DumpDatasetToStdOut() error
 }
 
 type DatasetReader interface {

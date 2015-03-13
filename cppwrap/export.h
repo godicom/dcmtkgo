@@ -2,6 +2,9 @@ int makeGetErrorCtx(unsigned long * errorCtx);
 void closeErrorCtx(unsigned long errorCtx);
 int getError(unsigned long errorCtx, int errorId, char * buf, unsigned long bufSize);
 
+int getDatasetSize(unsigned long errorCtx, unsigned long dataSetCtx, unsigned long * rvSize);
+int dumpDatasetToStdOut(unsigned long errorCtx, unsigned long dataSetCtx);
+
 int createEmptyDcmtkDataset(unsigned long errorCtx, unsigned long *rvDatasetCtx);
 int createDatasetFromMemory(unsigned long errorCtx, unsigned long *rvDatasetCtx, const unsigned char * buf, unsigned int bufSize, int transfer);
 int openDcmtkDataset(unsigned long errorCtx, const char * fileName, unsigned long *rvDatasetCtx);

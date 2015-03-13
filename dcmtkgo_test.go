@@ -36,7 +36,7 @@ func compareValues(err error, expect interface{}, got interface{}, t *testing.T)
 	if err != nil {
 		t.Error(err)
 	}
-	
+
 	if !reflect.DeepEqual(got, expect) {
 		t.Errorf("Expected %q, got %q", expect, got)
 	}
@@ -136,7 +136,7 @@ func saveValueToDataset(ds Dataset, tag uint32, val interface{}, t *testing.T) {
 		t.Error("unknown")
 	}
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 }
 
@@ -152,8 +152,11 @@ func TestSomeTypes(t *testing.T) {
 	}{
 		{PatientName, "Test^S R"},
 		{SOPInstanceUID, "1.2.276.0.7230010.3.1.4.2139363186.7819.982086466.4"},
-		{AcquisitionMatrix,  []uint16{4, 3, 2, 1}},
-		//{SOPInstanceUID, uint32(1234)},
+		{AcquisitionMatrix, []uint16{4, 3, 2, 1}},
+		{SimpleFrameList, []uint32{1, 1, 2, 3, 4, 5}},
+
+		//BUG! {PatientSize, float32(12)},
+
 	}
 
 	for _, c := range cases {
@@ -174,5 +177,8 @@ func TestSomeTypes(t *testing.T) {
 	for _, c := range cases {
 		loadValueFromDataset(ds2, c.tag, c.want, t)
 	}
-
+	err = ds2.DumpDatasetToStdOut()
+	if err != nil {
+		t.Fatal(err)
+	}
 }
