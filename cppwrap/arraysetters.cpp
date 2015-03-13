@@ -24,43 +24,43 @@ extern "C"
 
 template<class T>
 struct SetArrayCallSwitcher{
-	SetArrayCallSwitcher(DcmElement *, T * , unsigned long , OFCondition & )
+	SetArrayCallSwitcher(DcmElement *, const T * , unsigned long , OFCondition & )
 	{
 		assert(false);//must be never called
 	}
 };
 
-template<> struct SetArrayCallSwitcher<const unsigned short *>{
-	SetArrayCallSwitcher(DcmElement * e, const unsigned short * t, unsigned long length, OFCondition & cond){
+template<> struct SetArrayCallSwitcher<const short unsigned int>{
+	SetArrayCallSwitcher(DcmElement * e, const short unsigned int * t, unsigned long length, OFCondition & cond){
 		cond = e->putUint16Array(t, length);
 }};
 
-template<> struct SetArrayCallSwitcher<const unsigned char *>{
+template<> struct SetArrayCallSwitcher<const unsigned char>{
 	SetArrayCallSwitcher(DcmElement * e, const unsigned char * t, unsigned long length, OFCondition & cond){
 		cond = e->putUint8Array(t, length);
 }};
 
-template<> struct SetArrayCallSwitcher<const short *>{
+template<> struct SetArrayCallSwitcher<const short>{
 	SetArrayCallSwitcher(DcmElement * e, const short * t, unsigned long length, OFCondition & cond){
 		cond = e->putSint16Array(t, length);
 }};
 
-template<> struct SetArrayCallSwitcher<const int *>{
+template<> struct SetArrayCallSwitcher<const int>{
 	SetArrayCallSwitcher(DcmElement * e, const int * t, unsigned long length, OFCondition & cond){
 		cond = e->putSint32Array(t, length);
 }};
 
-template<> struct SetArrayCallSwitcher<const unsigned int *>{
+template<> struct SetArrayCallSwitcher<const unsigned int>{
 	SetArrayCallSwitcher(DcmElement * e, const unsigned int * t, unsigned long length, OFCondition & cond){
 		cond = e->putUint32Array(t, length);
 }};
 
-template<> struct SetArrayCallSwitcher<const float *>{
+template<> struct SetArrayCallSwitcher<const float>{
 	SetArrayCallSwitcher(DcmElement * e, const float * t, unsigned long length, OFCondition & cond){
 		cond = e->putFloat32Array(t, length);
 }};
 
-template<> struct SetArrayCallSwitcher<const double *>{
+template<> struct SetArrayCallSwitcher<const double>{
 	SetArrayCallSwitcher(DcmElement * e, const double * t, unsigned long length, OFCondition & cond){
 		cond = e->putFloat64Array(t, length);
 }};
